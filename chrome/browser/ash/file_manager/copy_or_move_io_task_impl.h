@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_IMPL_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +24,19 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
+
+// Moving or copying a folder with multiple nested files and folders is treated
+// as a single operation (moving or copying the top level folder). However,
+// progress is reported at an individual level (that is, for each nested file).
+// This struct lets this io_task keep track of both the aggregate progress of
+// top folders and that of their individual items.
+struct ItemProgress {
+  ItemProgress();
+  ~ItemProgress();
+
+  base::flat_map<std::string, int64_t> individual_progress;
+  int64_t aggregate_progress = 0;
+};
 
 // This class represents a copy or move operation. It checks whether there is
 // enough space for the copy or move to occur, and also sends the copy or move
@@ -73,6 +88,7 @@ class CopyOrMoveIOTaskImpl {
   // `FileManagerCopyOrMoveHookDelegate` to one understandable by
   // `progress_callback_`.
   void OnCopyOrMoveProgress(
+      size_t idx,
       FileManagerCopyOrMoveHookDelegate::ProgressType type,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
@@ -133,9 +149,9 @@ class CopyOrMoveIOTaskImpl {
   // std::vector::size here MUST be the same as progress_.sources size.
   std::vector<base::FilePath> destination_file_names_;
 
-  // Stores the size reported by the last progress update so we can compute the
+  // Stores the sizes reported by the last progress update so we can compute the
   // delta on the next progress update.
-  int64_t last_progress_size_;
+  std::vector<ItemProgress> item_progresses;
 
   // Stores the id of the copy or move operation if one is in progress. Used so
   // the transfer can be cancelled.

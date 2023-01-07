@@ -833,9 +833,12 @@ void CopyOrMoveOperationDelegate::StreamCopyHelper::DidWrite(
   num_copied_bytes_ += result;
 
   // Check the elapsed time since last |file_progress_callback_| invocation.
+  // Make sure to report the last progress update (when there are no bytes
+  // remaining) regardless of the time so consumers don't miss it.
   base::Time now = base::Time::Now();
   if (now - last_progress_callback_invocation_time_ >=
-      min_progress_callback_invocation_span_) {
+          min_progress_callback_invocation_span_ ||
+      buffer->BytesRemaining() <= 0) {
     file_progress_callback_.Run(num_copied_bytes_);
     last_progress_callback_invocation_time_ = now;
   }

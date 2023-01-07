@@ -248,7 +248,7 @@ CopyOrMoveIOTaskScanningImpl::GetHookDelegate(size_t idx) {
   // callbacks are executed on the current (i.e., UI) thread.
   auto progress_callback = google_apis::CreateRelayCallback(
       base::BindRepeating(&CopyOrMoveIOTaskScanningImpl::OnCopyOrMoveProgress,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(), idx));
 
   if (report_only_scans_) {
     // For report-only scans, no blocking should be performed, so we use the

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -131,6 +132,9 @@ bool IsCrossFileSystem(Profile* profile,
 
 }  // namespace
 
+ItemProgress::ItemProgress() = default;
+ItemProgress::~ItemProgress() = default;
+
 CopyOrMoveIOTaskImpl::CopyOrMoveIOTaskImpl(
     OperationType type,
     ProgressStatus& progress,
@@ -142,7 +146,8 @@ CopyOrMoveIOTaskImpl::CopyOrMoveIOTaskImpl(
     : progress_(progress),
       profile_(profile),
       file_system_context_(file_system_context),
-      source_sizes_(progress_.sources.size()) {
+      source_sizes_(progress_.sources.size()),
+      item_progresses(progress_.sources.size()) {
   DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
   if (!destination_file_names.empty()) {
     DCHECK_EQ(progress_.sources.size(), destination_file_names.size());
@@ -365,8 +370,6 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   }
   progress_.outputs.emplace_back(destination_result.value(), absl::nullopt);
 
-  last_progress_size_ = 0;
-
   const storage::FileSystemURL& source_url = progress_.sources[idx].url;
   const storage::FileSystemURL& destination_url = destination_result.value();
 
@@ -415,20 +418,37 @@ CopyOrMoveIOTaskImpl::GetHookDelegate(size_t idx) {
   // current thread.
   auto progress_callback = google_apis::CreateRelayCallback(
       base::BindRepeating(&CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(), idx));
   return std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback);
 }
 
 void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
+    size_t idx,
     FileManagerCopyOrMoveHookDelegate::ProgressType type,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     int64_t size) {
+  std::string destination_path = destination_url.path().AsUTF8Unsafe();
+  auto& [individual_progress, aggregate_progress] = item_progresses[idx];
   // |size| is only valid for kProgress.
-  if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
+  if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress) {
+    if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kBegin) {
+      individual_progress[destination_path] = 0;
+    } else if (type ==
+                   FileManagerCopyOrMoveHookDelegate::ProgressType::kEndCopy ||
+               type ==
+                   FileManagerCopyOrMoveHookDelegate::ProgressType::kEndMove) {
+      individual_progress.erase(destination_path);
+    }
     return;
+  }
 
-  progress_.bytes_transferred += size - last_progress_size_;
+  int64_t& last_size = individual_progress.at(destination_path);
+  int64_t delta = size - last_size;
+  last_size = size;
+
+  aggregate_progress += delta;
+  progress_.bytes_transferred += delta;
   speedometer_.Update(progress_.bytes_transferred);
   const double remaining_seconds = speedometer_.GetRemainingSeconds();
 
@@ -438,7 +458,6 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
     progress_.remaining_seconds = remaining_seconds;
   }
 
-  last_progress_size_ = size;
   progress_callback_.Run(progress_);
 }
 
@@ -449,7 +468,16 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   operation_id_.reset();
   progress_.sources[idx].error = error;
   progress_.outputs[idx].error = error;
-  progress_.bytes_transferred += source_sizes_[idx] - last_progress_size_;
+
+  auto& [individual_progress, aggregate_progress] = item_progresses[idx];
+  individual_progress.clear();
+
+  // Some copy and move operations (depending on the source and destination
+  // filesystems) don't support progress reporting yet, so we rely on setting
+  // bytes_transferred only when each item completes. By also deducting
+  // `aggregate_progress` from bytes_transferred, we ensure that both operations
+  // that report progress and those that don't are supported.
+  progress_.bytes_transferred += source_sizes_[idx] - aggregate_progress;
 
   if (idx < progress_.sources.size() - 1) {
     progress_callback_.Run(progress_);
