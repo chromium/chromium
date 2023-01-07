@@ -154,15 +154,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ApiTabUpdateJavascript" enum="Boolean"
-    expires_after="M78">
-  <owner>dbertoni@chromium.org</owner>
-  <summary>
-    Reports whether a tab was updated to a javascript:-scheme URL from the
-    extensions tabs.update API. Reported once per call to tabs.update().
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
     expires_after="2023-06-04">
   <owner>benwells@chromium.org</owner>

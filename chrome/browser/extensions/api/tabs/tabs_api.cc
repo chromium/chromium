@@ -1589,11 +1589,8 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
     return false;
   }
 
-  const bool is_javascript_scheme = url.SchemeIs(url::kJavaScriptScheme);
-  UMA_HISTOGRAM_BOOLEAN("Extensions.ApiTabUpdateJavascript",
-                        is_javascript_scheme);
   // JavaScript URLs are forbidden in chrome.tabs.update().
-  if (is_javascript_scheme) {
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
     *error = tabs_constants::kJavaScriptUrlsNotAllowedInTabsUpdate;
     return false;
   }
