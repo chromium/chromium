@@ -32,6 +32,7 @@ import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_device_detail_subpage.html.js';
+import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
 enum PageState {
   DISCONNECTED = 1,
@@ -105,6 +106,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
   systemProperties: BluetoothSystemProperties;
 
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
   private deviceId_: string;
   private device_: PairedBluetoothDeviceProperties|null;
   private isDeviceConnected_: boolean;
@@ -118,6 +120,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
     /** RouteOriginBehaviorInterface override */
     this.route_ = routes.BLUETOOTH_DEVICE_DETAIL;
+    this.browserProxy_ =
+        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -150,6 +154,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.deviceId_ = decodeURIComponent(deviceId);
     recordBluetoothUiSurfaceMetrics(
         BluetoothUiSurface.SETTINGS_DEVICE_DETAIL_SUBPAGE);
+    this.browserProxy_.showBluetoothRevampHatsSurvey();
   }
 
   private onSystemPropertiesOrDeviceIdChanged_(): void {

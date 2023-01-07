@@ -4,15 +4,16 @@
 
 import 'chrome://os-settings/strings.m.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
 
 suite('OsBluetoothDeviceDetailPageTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -26,12 +27,19 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
    */
   let propertiesObserver;
 
+  /** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+  let browserProxy = null;
+
   setup(function() {
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
   });
 
   function init() {
+    browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
+    OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
+        browserProxy);
+
     bluetoothDeviceDetailPage =
         document.createElement('os-settings-bluetooth-device-detail-subpage');
     document.body.appendChild(bluetoothDeviceDetailPage);
@@ -884,5 +892,16 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // Device and device Id should be null after navigating backward.
     assertFalse(!!bluetoothDeviceDetailPage.getDeviceForTest());
     assertFalse(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
+  });
+
+  test('Route to device details page', function() {
+    init();
+    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
+    const params = new URLSearchParams();
+    params.append('id', 'id');
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
+    assertEquals(
+        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to increase');
   });
 });
