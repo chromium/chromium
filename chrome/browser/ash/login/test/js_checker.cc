@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/test/js_checker.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"

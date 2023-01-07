@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

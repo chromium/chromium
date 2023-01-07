@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"

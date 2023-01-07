@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/logger/cfm_logger_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/chromebox_for_meetings/logger/reporting_pipeline.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/idle/idle_detection_permission_context.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"

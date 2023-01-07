@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"

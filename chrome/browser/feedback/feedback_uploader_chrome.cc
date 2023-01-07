@@ -4,7 +4,7 @@
 
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"

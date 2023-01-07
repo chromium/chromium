@@ -4,11 +4,11 @@
 
 #include "chrome/browser/component_updater/intervention_policy_database_component_installer.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 #include "components/component_updater/component_updater_paths.h"

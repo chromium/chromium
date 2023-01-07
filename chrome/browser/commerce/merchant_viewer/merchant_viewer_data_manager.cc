@@ -4,8 +4,8 @@
 
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"

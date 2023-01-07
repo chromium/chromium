@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_H_
 #define CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/net/nss_service.h"
 
 class CertDbInitializer {

@@ -6,8 +6,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "components/sync/test/model_type_store_test_util.h"

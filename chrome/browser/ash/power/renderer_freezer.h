@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 
-#include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "chromeos/dbus/power/power_manager_client.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/bruschetta/fake_bruschetta_launcher.h"
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace bruschetta {
 FakeBruschettaLauncher::FakeBruschettaLauncher()

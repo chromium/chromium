@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FOCUS_CYCLER_DELEGATE_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FOCUS_CYCLER_DELEGATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace lock_screen_apps {
 

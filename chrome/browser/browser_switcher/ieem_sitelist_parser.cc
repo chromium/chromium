@@ -4,8 +4,8 @@
 
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_switcher/browser_switcher_features.h"
 #include "content/public/browser/browser_thread.h"

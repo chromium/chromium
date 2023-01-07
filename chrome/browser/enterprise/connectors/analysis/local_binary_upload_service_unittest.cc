@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"

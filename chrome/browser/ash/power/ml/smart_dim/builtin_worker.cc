@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/power/ml/smart_dim/builtin_worker.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/grit/browser_resources.h"

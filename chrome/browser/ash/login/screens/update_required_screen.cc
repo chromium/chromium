@@ -10,7 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/system_tray.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"

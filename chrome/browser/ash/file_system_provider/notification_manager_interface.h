@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_INTERFACE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 namespace file_system_provider {

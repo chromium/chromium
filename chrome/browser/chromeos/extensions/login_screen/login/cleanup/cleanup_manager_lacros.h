@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_LACROS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_LACROS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

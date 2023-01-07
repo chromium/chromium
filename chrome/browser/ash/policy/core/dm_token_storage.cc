@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"

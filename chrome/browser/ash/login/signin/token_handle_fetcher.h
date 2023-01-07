@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"

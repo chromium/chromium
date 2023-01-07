@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"

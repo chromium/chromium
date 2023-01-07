@@ -11,9 +11,9 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"

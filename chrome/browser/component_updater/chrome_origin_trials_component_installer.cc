@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 
-#include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"

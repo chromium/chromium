@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_EDU_COEXISTENCE_LOGIN_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_EDU_COEXISTENCE_LOGIN_SCREEN_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"

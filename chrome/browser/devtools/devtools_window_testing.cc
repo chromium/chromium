@@ -4,8 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_window_testing.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

@@ -4,9 +4,8 @@
 
 #include "chrome/browser/device_reauth/win/biometric_authenticator_win.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"

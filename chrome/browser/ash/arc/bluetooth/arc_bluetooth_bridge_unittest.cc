@@ -14,7 +14,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_bluetooth_instance.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"

@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"

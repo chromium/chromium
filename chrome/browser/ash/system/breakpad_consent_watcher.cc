@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/app/breakpad_linux.h"

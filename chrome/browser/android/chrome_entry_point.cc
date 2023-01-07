@@ -5,7 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_utils.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/android/chrome_jni_registration_generated.h"
 #include "chrome/app/android/chrome_jni_onload.h"

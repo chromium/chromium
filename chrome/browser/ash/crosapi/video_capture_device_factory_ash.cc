@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
 #include "content/public/browser/video_capture_service.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
 
 #include "base/android/jni_android.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 #include "chrome/browser/device_reauth/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/device_reauth/biometric_authenticator.h"

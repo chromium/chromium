@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"

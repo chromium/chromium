@@ -9,9 +9,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

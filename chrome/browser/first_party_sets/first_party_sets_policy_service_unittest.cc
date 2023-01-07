@@ -4,7 +4,7 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

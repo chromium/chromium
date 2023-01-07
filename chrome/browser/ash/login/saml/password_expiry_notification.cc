@@ -12,7 +12,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_SCOPED_TEST_RECOMMEND_APPS_FETCHER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_SCOPED_TEST_RECOMMEND_APPS_FETCHER_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 
 namespace ash {

@@ -6,8 +6,8 @@
 
 #include <jni.h>
 #include "base/android/jni_android.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "components/password_manager/core/browser/password_manager_util.h"

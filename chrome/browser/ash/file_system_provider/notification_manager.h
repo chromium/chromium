@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/device_dock_mac_address_source_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

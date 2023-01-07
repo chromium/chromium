@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/history_report/delta_file_service.h"
 #include "chrome/browser/android/history_report/usage_reports_buffer_service.h"

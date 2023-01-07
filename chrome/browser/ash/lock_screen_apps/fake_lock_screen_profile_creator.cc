@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_profile_manager.h"

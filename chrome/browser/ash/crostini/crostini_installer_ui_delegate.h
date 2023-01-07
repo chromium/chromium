@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_UI_DELEGATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "components/commerce/core/heuristics/commerce_heuristics_provider.h"

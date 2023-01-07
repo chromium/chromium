@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"

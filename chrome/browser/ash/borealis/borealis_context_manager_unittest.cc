@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"

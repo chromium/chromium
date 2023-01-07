@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/syslog_logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

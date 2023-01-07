@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

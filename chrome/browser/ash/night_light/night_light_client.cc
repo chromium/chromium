@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

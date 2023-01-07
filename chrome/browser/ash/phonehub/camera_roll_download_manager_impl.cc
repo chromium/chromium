@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

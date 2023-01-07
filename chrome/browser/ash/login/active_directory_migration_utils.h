@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_ACTIVE_DIRECTORY_MIGRATION_UTILS_H_
 #define CHROME_BROWSER_ASH_LOGIN_ACTIVE_DIRECTORY_MIGRATION_UTILS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

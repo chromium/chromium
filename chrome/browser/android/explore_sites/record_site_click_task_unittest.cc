@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/explore_sites/record_site_click_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"

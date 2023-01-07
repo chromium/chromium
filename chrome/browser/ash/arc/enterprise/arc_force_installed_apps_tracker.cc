@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

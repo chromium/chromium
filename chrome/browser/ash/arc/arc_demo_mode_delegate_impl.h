@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_ARC_DEMO_MODE_DELEGATE_IMPL_H_
 
 #include "ash/components/arc/session/arc_client_adapter.h"
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 
 namespace arc {
 

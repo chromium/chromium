@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_async_file_util.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"

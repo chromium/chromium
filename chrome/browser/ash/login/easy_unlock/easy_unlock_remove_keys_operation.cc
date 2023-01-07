@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_remove_keys_operation.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "google_apis/gaia/gaia_auth_util.h"

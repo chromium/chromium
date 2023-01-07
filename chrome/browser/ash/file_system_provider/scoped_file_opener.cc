@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/scoped_file_opener.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 

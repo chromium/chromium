@@ -12,7 +12,6 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"

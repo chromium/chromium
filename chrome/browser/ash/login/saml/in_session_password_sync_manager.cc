@@ -8,9 +8,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"

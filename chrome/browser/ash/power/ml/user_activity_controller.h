@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/power/ml/user_activity_manager.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_impl.h"

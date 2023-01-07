@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

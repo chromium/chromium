@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_FILES_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_FILES_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

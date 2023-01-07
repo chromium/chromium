@@ -11,7 +11,7 @@
 #include <set>
 
 #include "base/barrier_closure.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

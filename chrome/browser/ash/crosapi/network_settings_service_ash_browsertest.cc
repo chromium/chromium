@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
 #include "chrome/browser/browser_process.h"

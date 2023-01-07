@@ -8,8 +8,8 @@
 
 #include "base/android/callback_android.h"
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/android/chrome_jni_headers/BackgroundSyncBackgroundTaskScheduler_jni.h"
 #include "chrome/android/chrome_jni_headers/BackgroundSyncBackgroundTask_jni.h"
 #include "chrome/android/chrome_jni_headers/GooglePlayServicesChecker_jni.h"

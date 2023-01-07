@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMPLETION_BLOCKER_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMPLETION_BLOCKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_item.h"
 

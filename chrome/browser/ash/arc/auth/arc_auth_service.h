@@ -11,8 +11,8 @@
 
 #include "ash/components/arc/mojom/auth.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"

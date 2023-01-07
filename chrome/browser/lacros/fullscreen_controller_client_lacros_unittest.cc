@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/pumpkin_installer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/accessibility_features.h"
 

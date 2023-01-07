@@ -12,7 +12,7 @@
 #include "ash/public/mojom/tray_action.mojom-forward.h"
 #include "ash/public/mojom/tray_action.mojom-shared.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

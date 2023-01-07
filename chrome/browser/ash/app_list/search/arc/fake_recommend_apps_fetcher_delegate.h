@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 
 namespace app_list {

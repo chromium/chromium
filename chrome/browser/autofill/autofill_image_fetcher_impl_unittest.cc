@@ -4,8 +4,8 @@
 
 #include "chrome/browser/autofill/autofill_image_fetcher_impl.h"
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

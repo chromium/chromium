@@ -9,8 +9,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/bind.h"
 #include "base/containers/id_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"

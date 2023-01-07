@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"

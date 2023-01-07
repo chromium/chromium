@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 

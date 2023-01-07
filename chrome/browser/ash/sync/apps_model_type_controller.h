@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/model/model_type_store.h"

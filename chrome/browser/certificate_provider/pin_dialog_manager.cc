@@ -4,9 +4,9 @@
 
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 namespace chromeos {

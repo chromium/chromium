@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "apps/saved_files_service.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_restrictions.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/browser/cfm_browser_service.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/chromebox_for_meetings/browser/cfm_memory_details.h"
 #include "chrome/browser/memory_details.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"

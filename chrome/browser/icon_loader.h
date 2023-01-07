@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ICON_LOADER_H_
 #define CHROME_BROWSER_ICON_LOADER_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"

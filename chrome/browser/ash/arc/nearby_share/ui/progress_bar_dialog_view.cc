@@ -8,8 +8,8 @@
 
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/style/ash_color_id.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

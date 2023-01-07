@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 
 namespace gfx {

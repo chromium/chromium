@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_DELEGATE_CHROMEOS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_DELEGATE_CHROMEOS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

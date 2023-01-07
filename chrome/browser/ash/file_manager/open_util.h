@@ -8,7 +8,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_OPEN_UTIL_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_OPEN_UTIL_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/platform_util.h"
 
 class Profile;

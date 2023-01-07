@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_file_stream_writer.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"
 #include "content/public/browser/browser_thread.h"

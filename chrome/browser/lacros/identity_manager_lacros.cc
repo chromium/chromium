@@ -4,8 +4,8 @@
 
 #include "chrome/browser/lacros/identity_manager_lacros.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/lacros/lacros_service.h"
 
 namespace {

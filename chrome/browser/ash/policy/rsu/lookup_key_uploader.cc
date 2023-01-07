@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"

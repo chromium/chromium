@@ -9,8 +9,8 @@
 
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"

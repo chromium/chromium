@@ -4,9 +4,9 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
-#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"

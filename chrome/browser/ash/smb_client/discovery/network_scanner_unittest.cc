@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/smb_client/discovery/in_memory_host_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

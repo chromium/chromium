@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"

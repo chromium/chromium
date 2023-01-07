@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/vr/vr_module_provider.h"
 #include "chrome/browser/vr/vr_export.h"

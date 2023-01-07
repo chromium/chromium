@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

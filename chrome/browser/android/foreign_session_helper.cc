@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/android/chrome_jni_headers/ForeignSessionHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/chrome_notification_types.h"

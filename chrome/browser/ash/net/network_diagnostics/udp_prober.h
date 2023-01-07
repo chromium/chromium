@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"

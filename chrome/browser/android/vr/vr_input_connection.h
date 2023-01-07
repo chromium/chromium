@@ -9,7 +9,7 @@
 #include <queue>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/vr/platform_input_handler.h"
 #include "chrome/browser/vr/text_edit_action.h"
 

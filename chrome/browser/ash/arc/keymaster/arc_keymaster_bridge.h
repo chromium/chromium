@@ -7,7 +7,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"

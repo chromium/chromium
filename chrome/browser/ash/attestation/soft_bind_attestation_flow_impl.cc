@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 
-#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"

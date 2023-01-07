@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"

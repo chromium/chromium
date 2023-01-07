@@ -7,7 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "content/public/browser/xr_install_helper.h"

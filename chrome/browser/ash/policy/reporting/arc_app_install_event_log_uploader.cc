@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_uploader.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"

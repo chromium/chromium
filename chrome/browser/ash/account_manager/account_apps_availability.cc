@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/account_manager_core/account.h"

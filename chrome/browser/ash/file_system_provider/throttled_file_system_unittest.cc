@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"

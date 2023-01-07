@@ -4,9 +4,9 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_termination_manager.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

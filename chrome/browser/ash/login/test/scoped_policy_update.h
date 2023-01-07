@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 

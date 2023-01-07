@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"

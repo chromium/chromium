@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <signal.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"

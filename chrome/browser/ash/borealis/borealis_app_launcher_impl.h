@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 class Profile;
 

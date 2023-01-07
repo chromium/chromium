@@ -7,7 +7,7 @@
 #include <utility>
 #include "ash/shell.h"
 #include "base/barrier_callback.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"

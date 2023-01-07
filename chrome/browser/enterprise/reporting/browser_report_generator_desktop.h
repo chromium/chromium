@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/version_info/channel.h"

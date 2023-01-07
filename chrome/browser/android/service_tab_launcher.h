@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ANDROID_SERVICE_TAB_LAUNCHER_H_
 
 #include "base/android/jni_android.h"
-#include "base/callback_forward.h"
 #include "base/containers/id_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/singleton.h"
 
 namespace content {

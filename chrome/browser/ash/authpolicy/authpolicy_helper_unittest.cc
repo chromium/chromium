@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"

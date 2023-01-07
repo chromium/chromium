@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/icon_loader.h"
 
 // Helper class for DownloadsGetFileIconFunction. Only used for a single icon

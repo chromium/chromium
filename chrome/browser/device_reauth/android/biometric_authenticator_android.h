@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"

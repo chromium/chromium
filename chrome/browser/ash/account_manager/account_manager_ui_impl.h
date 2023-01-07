@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
 

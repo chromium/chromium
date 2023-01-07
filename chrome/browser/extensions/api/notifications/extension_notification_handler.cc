@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"

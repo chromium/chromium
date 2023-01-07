@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key_subtle.h"

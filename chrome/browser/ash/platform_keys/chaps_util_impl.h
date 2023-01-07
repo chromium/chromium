@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "crypto/scoped_nss_types.h"

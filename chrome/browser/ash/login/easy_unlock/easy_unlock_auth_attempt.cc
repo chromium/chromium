@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"

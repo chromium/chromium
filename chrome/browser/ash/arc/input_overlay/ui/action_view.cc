@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
 #include "ash/app_list/app_list_util.h"
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"

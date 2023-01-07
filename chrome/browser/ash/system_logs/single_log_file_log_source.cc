@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/system_logs/single_log_file_log_source.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/process/process_info.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"

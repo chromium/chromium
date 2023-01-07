@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom-test-utils.h"

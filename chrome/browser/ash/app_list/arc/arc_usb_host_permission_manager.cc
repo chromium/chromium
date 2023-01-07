@@ -8,8 +8,8 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/usb/usb_host_bridge.h"
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"

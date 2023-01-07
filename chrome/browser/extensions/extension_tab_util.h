@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"

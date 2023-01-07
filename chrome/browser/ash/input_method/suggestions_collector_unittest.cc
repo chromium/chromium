@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"

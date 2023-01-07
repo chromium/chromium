@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 
 namespace enterprise_management {

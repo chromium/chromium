@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/guid.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"

@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_support_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "google_apis/google_api_keys.h"
 

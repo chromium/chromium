@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager.h"
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/process/launch.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

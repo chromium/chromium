@@ -10,8 +10,8 @@
 
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/system_tray_observer.h"
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

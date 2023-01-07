@@ -7,8 +7,8 @@
 #include <cmath>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"

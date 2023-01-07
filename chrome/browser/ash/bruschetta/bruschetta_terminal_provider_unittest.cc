@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_terminal_provider.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"

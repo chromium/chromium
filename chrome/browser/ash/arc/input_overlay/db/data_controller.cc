@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_overlay/db/data_controller.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"

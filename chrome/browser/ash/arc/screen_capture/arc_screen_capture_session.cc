@@ -8,7 +8,7 @@
 
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/screen_capture_notification_ui_ash.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"

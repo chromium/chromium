@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
 
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

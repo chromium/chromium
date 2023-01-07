@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/borealis/borealis_security_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"

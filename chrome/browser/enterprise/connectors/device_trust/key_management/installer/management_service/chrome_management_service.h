@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 

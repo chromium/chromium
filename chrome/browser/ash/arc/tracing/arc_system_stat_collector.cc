@@ -11,11 +11,11 @@
 #include <array>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/cpu.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"

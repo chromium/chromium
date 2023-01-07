@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/network_change_manager_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"

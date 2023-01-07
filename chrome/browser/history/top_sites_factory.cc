@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_BLUETOOTH_ARC_BLUETOOTH_TASK_QUEUE_H_
 #define CHROME_BROWSER_ASH_ARC_BLUETOOTH_ARC_BLUETOOTH_TASK_QUEUE_H_
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 
 namespace arc {
 

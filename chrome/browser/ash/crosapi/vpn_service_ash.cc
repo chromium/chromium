@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"

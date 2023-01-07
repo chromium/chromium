@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

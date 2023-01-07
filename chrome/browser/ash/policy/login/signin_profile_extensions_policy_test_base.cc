@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"

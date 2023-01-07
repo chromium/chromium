@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"

@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"

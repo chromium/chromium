@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_network_context.h"
 #include "content/public/browser/browser_task_traits.h"

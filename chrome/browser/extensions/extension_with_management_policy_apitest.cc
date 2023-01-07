@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"

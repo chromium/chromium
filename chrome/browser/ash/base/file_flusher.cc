@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <set>
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/atomic_flag.h"

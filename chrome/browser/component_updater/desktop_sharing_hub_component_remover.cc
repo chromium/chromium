@@ -4,8 +4,8 @@
 
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "components/component_updater/component_updater_utils.h"
 

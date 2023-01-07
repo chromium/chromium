@@ -6,7 +6,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 #include "chrome/browser/android/background_task_scheduler/chrome_background_task_factory.h"
 #include "chrome/browser/android/profile_key_util.h"

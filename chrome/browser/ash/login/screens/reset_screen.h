@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

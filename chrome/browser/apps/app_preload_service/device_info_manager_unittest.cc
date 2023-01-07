@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"

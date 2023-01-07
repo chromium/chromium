@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/ui/base_dialog_delegate_view.h"
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace aura {
 class Window;

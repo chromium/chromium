@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"

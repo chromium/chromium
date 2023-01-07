@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_FORCE_INSTALL_OBSERVER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_FORCE_INSTALL_OBSERVER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

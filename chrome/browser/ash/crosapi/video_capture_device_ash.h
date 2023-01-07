@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_VIDEO_CAPTURE_DEVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_VIDEO_CAPTURE_DEVICE_ASH_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

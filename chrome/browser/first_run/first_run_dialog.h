@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FIRST_RUN_FIRST_RUN_DIALOG_H_
 #define CHROME_BROWSER_FIRST_RUN_FIRST_RUN_DIALOG_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

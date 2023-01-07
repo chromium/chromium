@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "content/public/browser/browser_task_traits.h"

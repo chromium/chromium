@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"

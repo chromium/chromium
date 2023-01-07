@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"

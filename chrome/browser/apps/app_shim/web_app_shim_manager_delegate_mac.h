@@ -7,7 +7,7 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace content {
 class WebContents;

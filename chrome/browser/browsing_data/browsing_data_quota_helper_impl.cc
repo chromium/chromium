@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"

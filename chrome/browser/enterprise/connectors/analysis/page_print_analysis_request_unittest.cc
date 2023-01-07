@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

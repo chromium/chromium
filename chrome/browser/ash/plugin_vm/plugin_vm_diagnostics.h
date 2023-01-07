@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_DIAGNOSTICS_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_DIAGNOSTICS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom-forward.h"
 
 namespace plugin_vm {

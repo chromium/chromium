@@ -4,8 +4,8 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/common/chrome_switches.h"
 
 namespace {

@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"

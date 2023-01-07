@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 
 namespace ash {

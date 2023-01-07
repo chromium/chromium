@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_LAUNCH_WATCHER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_LAUNCH_WATCHER_H_
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 

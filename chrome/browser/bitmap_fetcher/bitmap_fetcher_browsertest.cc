@@ -4,8 +4,8 @@
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

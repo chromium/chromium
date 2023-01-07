@@ -4,12 +4,12 @@
 
 #include "chrome/browser/chrome_process_singleton.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

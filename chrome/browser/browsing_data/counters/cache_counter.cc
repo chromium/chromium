@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/core/pref_names.h"

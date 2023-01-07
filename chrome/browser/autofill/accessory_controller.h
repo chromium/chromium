@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/unique_ids.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"

@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

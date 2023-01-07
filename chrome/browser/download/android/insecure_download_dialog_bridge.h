@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/download/android/download_callback_validator.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/native_widget_types.h"

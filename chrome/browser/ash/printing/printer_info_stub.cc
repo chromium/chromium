@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/printing/printer_info.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "printing/printer_status.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_TEST_PREDICATE_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_TEST_PREDICATE_WAITER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"

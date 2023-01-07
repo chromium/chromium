@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "components/commerce/core/commerce_heuristics_data.h"

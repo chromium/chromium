@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_BRIDGE_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_BRIDGE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/download/public/common/download_item.h"
 
 using DownloadItem = download::DownloadItem;

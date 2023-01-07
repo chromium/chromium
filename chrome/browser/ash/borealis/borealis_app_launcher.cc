@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"

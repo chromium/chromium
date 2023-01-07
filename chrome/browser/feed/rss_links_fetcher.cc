@@ -4,7 +4,7 @@
 
 #include "chrome/browser/feed/rss_links_fetcher.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

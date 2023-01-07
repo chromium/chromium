@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

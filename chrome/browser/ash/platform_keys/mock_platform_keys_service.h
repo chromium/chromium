@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

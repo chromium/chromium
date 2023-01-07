@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/constants/dbus_switches.h"

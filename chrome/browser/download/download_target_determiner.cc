@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"

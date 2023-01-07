@@ -9,10 +9,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

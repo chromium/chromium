@@ -9,8 +9,8 @@
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/enterprise/arc_snapshot_reboot_notification.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 
 class PrefService;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"

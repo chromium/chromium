@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"

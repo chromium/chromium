@@ -7,7 +7,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_tracing_instance.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"

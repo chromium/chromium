@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "dbus/message.h"

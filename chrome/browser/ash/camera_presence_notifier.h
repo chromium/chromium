@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"

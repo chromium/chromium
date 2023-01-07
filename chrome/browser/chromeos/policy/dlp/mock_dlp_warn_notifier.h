@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_WARN_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_WARN_NOTIFIER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"

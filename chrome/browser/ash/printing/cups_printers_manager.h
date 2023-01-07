@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"

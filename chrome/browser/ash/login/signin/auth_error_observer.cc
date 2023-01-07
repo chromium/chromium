@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ash/login/reauth_stats.h"

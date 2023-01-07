@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"

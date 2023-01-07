@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "extensions/grit/extensions_browser_resources.h"

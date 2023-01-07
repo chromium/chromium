@@ -4,8 +4,8 @@
 
 #include "chrome/browser/lacros/device_oauth2_token_service_lacros.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account_manager_util.h"

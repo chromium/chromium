@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYNC_OS_SYNCABLE_SERVICE_MODEL_TYPE_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_SYNC_OS_SYNCABLE_SERVICE_MODEL_TYPE_CONTROLLER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"

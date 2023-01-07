@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"

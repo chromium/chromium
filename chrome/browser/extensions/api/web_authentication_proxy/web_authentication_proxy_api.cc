@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/profiles/profile.h"

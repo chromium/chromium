@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

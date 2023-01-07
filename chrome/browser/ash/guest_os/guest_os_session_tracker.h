@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_SESSION_TRACKER_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_SESSION_TRACKER_H_
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"

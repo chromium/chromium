@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_api.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"

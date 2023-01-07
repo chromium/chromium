@@ -10,7 +10,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/pip/arc_picture_in_picture_window_controller_impl.h"

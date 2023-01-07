@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_LAUNCHER_H_
 
 #include <string>
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"

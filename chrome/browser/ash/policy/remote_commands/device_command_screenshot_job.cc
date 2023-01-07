@@ -9,7 +9,7 @@
 
 #include "ash/shell.h"
 #include "base/barrier_callback.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"

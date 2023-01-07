@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"

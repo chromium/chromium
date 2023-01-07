@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 #define CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/mouse_capture_delegate.h"

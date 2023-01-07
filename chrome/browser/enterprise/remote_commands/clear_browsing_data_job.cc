@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/remote_commands/clear_browsing_data_job.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"

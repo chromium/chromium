@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_MOCK_PRINT_JOB_HISTORY_SERVICE_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_MOCK_PRINT_JOB_HISTORY_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

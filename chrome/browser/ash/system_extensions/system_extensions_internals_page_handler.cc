@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_internals_page_handler.h"
 
-#include "base/callback_helpers.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 

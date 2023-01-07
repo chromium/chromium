@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"

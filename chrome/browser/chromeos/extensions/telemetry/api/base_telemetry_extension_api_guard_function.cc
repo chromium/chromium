@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 

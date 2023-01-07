@@ -7,7 +7,7 @@
 #include <cups/cups.h>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

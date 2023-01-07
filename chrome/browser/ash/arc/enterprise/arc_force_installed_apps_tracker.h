@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/components/arc/enterprise/arc_apps_tracker.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 class ArcAppListPrefs;

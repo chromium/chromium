@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_state.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"

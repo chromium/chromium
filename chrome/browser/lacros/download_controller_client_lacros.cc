@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"

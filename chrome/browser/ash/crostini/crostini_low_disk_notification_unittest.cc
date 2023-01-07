@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

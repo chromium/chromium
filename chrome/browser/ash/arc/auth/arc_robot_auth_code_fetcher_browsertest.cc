@@ -6,9 +6,9 @@
 #include <string>
 
 #include "ash/components/arc/test/arc_util_test_support.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"

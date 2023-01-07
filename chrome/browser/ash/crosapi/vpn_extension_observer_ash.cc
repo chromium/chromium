@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace crosapi {
 

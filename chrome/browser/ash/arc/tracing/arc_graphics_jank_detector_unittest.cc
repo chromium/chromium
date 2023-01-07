@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

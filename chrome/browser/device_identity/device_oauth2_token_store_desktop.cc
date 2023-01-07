@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/common/pref_names.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/policy/core/common/policy_pref_names.h"

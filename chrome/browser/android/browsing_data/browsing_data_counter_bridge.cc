@@ -5,7 +5,7 @@
 #include "chrome/browser/android/browsing_data/browsing_data_counter_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/android/chrome_jni_headers/BrowsingDataCounterBridge_jni.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_factory.h"

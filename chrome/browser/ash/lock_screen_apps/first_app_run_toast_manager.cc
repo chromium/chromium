@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HOST_RESOLVER_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HOST_RESOLVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"

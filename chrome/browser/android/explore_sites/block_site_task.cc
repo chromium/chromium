@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/explore_sites/block_site_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/core/offline_clock.h"

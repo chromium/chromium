@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

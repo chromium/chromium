@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_features.h"

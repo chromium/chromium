@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_DISPATCHER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_DISPATCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 
 namespace borealis {

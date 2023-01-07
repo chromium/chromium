@@ -14,7 +14,7 @@
 
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

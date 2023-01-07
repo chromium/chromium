@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

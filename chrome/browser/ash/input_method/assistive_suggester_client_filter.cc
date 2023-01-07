@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ui/browser_finder.h"

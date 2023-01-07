@@ -4,7 +4,7 @@
 
 #include <array>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"

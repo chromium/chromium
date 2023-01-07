@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/remote_commands/rotate_attestation_credential_job.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

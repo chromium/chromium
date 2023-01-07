@@ -4,7 +4,7 @@
 
 #include "chrome/browser/devtools/device/cast_device_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "net/base/host_port_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"

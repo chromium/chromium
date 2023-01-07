@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/dbus/proxy_resolution_service_provider.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/common/chrome_switches.h"

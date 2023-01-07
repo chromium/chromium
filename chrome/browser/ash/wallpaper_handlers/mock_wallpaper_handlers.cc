@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"

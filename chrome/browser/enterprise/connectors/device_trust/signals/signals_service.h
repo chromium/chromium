@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 
 namespace enterprise_connectors {

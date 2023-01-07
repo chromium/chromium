@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"

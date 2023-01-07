@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"

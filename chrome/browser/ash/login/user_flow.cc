@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/user_flow.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"

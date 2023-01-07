@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"

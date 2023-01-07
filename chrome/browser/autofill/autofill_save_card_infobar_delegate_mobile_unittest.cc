@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"

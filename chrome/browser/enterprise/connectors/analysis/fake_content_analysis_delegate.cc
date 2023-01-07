@@ -4,9 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"

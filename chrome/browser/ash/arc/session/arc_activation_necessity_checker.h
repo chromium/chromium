@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_ACTIVATION_NECESSITY_CHECKER_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_ACTIVATION_NECESSITY_CHECKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class Profile;
 

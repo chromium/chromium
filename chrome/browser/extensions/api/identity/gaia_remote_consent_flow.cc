@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "build/chromeos_buildflags.h"

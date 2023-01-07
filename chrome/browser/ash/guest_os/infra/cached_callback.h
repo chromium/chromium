@@ -8,7 +8,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 

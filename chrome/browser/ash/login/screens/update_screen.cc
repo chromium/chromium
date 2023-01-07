@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"

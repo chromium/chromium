@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/time/default_clock.h"

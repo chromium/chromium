@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"

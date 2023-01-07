@@ -4,8 +4,8 @@
 
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"

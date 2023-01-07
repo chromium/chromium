@@ -4,7 +4,7 @@
 
 #include "chrome/browser/icon_loader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/nix/mime_util_xdg.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

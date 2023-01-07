@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"

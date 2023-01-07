@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/syslog_logging.h"
 #include "base/threading/scoped_blocking_call.h"

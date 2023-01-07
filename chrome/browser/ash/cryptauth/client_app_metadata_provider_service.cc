@@ -8,8 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

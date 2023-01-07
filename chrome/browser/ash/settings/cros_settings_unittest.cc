@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"

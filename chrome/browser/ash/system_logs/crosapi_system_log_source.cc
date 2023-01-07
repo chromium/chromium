@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
 namespace system_logs {

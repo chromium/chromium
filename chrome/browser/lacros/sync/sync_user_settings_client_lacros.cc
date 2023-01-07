@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"

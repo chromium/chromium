@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/concierge_helper_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"

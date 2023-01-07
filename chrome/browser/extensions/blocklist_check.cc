@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/blocklist_check.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/common/extension.h"
 

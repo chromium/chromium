@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blob_reader.h"

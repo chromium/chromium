@@ -4,8 +4,8 @@
 
 #include "chrome/browser/lacros/arc/arc_intent_helper_mojo_lacros.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/lacros/lacros_service.h"
 

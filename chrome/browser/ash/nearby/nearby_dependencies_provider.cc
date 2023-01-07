@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 
 #include "ash/public/cpp/network_config_service.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"

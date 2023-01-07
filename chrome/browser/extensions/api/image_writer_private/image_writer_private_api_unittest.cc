@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

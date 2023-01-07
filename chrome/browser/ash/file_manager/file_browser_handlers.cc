@@ -10,10 +10,10 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"

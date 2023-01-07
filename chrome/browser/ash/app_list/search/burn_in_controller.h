@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_BURN_IN_CONTROLLER_H_
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"

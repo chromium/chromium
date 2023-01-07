@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

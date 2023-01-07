@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"

@@ -9,11 +9,11 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"

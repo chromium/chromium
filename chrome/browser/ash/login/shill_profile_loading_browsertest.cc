@@ -15,7 +15,7 @@
 // unmanaged user case and the managed user with/without network policy cases.
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/functional/bind_internal.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"

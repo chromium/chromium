@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/dbus/screen_lock_service_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/active_directory_migration_utils.h"
 
 #include "ash/constants/ash_paths.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"

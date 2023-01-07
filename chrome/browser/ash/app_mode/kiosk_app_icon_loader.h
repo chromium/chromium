@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_ICON_LOADER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_ICON_LOADER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

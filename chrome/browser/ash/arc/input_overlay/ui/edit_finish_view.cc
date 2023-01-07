@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
 #include "ash/style/style_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"

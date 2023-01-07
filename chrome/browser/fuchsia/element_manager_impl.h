@@ -8,9 +8,9 @@
 #include <fuchsia/element/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/fuchsia/scoped_service_binding.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/fuchsia_component_support/annotations_manager.h"
 

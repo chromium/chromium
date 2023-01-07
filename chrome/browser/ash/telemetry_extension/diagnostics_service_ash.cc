@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"

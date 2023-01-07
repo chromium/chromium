@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_MIGRATION_PROGRESS_TRACKER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_MIGRATION_PROGRESS_TRACKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 using ProgressCallback = base::RepeatingCallback<void(int)>;

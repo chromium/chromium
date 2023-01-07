@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"

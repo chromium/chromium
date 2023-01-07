@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_FAKE_BRUSCHETTA_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_FAKE_BRUSCHETTA_LAUNCHER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 
 namespace bruschetta {

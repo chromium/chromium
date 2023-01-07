@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/blocklist.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_SERVICE_LAUNCHER_H_
 
 #include <string>
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

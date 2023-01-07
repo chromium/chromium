@@ -12,7 +12,7 @@
 
 #include "ash/components/arc/mojom/process.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_iterator.h"

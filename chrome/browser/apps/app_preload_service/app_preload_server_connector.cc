@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/almanac_api_util.h"

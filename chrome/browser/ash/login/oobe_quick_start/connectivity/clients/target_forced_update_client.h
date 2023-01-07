@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_client_base.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"

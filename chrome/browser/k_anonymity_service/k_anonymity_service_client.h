@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_storage.h"

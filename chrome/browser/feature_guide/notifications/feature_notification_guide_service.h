@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"

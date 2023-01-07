@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"

@@ -7,7 +7,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"

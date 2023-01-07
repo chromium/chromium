@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UPGRADER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UPGRADER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"

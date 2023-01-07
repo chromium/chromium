@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/platform_keys/platform_keys.h"

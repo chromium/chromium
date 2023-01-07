@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/camera_presence_notifier.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"

@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "net/http/http_status_code.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"

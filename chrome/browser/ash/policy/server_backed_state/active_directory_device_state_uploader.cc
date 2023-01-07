@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"

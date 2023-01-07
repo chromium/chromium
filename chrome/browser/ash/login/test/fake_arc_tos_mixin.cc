@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"

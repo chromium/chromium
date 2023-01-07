@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/crosapi/print_job_info_idl_conversions.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"

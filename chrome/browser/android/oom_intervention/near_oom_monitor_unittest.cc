@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"

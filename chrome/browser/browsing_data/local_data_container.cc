@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"

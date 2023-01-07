@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/webui/scanning/scanning_app_delegate.h"
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/scanning/scanning_file_path_helper.h"

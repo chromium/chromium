@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "components/webapk/webapk.pb.h"

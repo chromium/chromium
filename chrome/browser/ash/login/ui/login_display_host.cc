@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

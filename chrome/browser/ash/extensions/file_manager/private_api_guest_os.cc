@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/private_api_guest_os.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"

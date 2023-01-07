@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_LAUNCHER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_LAUNCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"

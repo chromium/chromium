@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace vr {

@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/extensions/api/storage/sync_storage_backend.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"

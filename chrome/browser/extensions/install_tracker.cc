@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/install_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "extensions/browser/extension_prefs.h"

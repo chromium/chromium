@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FEED_ANDROID_REFRESH_TASK_SCHEDULER_IMPL_H_
 #define CHROME_BROWSER_FEED_ANDROID_REFRESH_TASK_SCHEDULER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"

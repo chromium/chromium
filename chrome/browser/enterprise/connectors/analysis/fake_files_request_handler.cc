@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 
 namespace enterprise_connectors {

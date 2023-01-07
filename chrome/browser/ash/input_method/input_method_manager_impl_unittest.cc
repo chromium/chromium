@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "ash/public/cpp/ime_controller.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/string_compare.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

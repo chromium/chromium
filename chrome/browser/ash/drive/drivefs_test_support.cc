@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"

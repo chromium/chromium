@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/preferences/jni_headers/PrefChangeRegistrar_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 

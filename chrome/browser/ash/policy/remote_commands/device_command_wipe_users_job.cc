@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_wipe_users_job.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"

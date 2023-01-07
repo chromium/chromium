@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"

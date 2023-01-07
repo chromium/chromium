@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "apps/switches.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"

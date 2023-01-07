@@ -4,8 +4,8 @@
 
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/ui/browser.h"

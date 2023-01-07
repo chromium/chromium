@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"

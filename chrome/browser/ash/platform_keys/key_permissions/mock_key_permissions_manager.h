@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

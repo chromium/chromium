@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/helper.h"

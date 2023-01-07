@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"

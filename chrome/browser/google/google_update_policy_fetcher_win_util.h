@@ -8,7 +8,7 @@
 #include <wtypes.h>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
 #include "google_update/google_update_idl.h"

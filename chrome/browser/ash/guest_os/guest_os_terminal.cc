@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"

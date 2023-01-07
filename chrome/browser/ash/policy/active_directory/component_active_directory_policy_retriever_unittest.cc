@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/active_directory/component_active_directory_policy_retriever.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"

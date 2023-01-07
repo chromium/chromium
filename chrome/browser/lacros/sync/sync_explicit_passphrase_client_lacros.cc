@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"

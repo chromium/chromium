@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "components/exo/shell_surface_util.h"

@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "content/public/browser/browsing_data_remover.h"

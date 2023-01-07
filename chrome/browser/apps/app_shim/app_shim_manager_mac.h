@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "apps/app_lifetime_monitor.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

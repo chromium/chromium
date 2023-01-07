@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/download/android/download_open_source.h"

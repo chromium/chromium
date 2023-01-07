@@ -10,7 +10,7 @@
 
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/test/browser_task_environment.h"

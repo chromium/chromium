@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"

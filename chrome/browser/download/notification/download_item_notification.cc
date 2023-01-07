@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"

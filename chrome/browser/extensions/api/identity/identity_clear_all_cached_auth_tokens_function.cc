@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"

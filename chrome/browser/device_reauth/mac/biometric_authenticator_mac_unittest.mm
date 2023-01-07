@@ -6,7 +6,7 @@
 
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

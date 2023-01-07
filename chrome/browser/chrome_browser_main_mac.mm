@@ -6,9 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"

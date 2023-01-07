@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_task_traits.h"

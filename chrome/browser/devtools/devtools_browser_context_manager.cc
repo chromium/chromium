@@ -4,8 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile_destroyer.h"

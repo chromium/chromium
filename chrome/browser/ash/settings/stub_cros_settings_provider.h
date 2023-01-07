@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 

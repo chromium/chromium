@@ -12,9 +12,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/i18n/string_compare.h"
 #include "base/location.h"

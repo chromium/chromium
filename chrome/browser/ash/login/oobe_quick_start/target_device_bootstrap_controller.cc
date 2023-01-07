@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"

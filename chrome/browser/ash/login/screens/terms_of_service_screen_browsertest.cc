@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_setup_controller.h"
 
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 
 namespace ash {

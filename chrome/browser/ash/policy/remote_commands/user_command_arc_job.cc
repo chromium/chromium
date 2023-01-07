@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/policy.mojom.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/syslog_logging.h"

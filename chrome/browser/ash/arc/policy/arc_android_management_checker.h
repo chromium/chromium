@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_POLICY_ARC_ANDROID_MANAGEMENT_CHECKER_H_
 #define CHROME_BROWSER_ASH_ARC_POLICY_ARC_ANDROID_MANAGEMENT_CHECKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"

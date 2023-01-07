@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/file_system_provider/queue.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"

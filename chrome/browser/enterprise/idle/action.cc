@@ -7,11 +7,11 @@
 #include <cstring>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"

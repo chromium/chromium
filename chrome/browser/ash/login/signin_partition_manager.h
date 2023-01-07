@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"

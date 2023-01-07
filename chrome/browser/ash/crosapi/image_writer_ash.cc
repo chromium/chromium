@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"

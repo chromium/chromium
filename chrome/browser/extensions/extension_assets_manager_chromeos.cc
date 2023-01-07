@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"

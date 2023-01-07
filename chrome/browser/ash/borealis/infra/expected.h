@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 // TODO(b/172501195): Make these available outside namespace borealis.

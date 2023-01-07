@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/extensions/install_limiter_factory.h"
 #include "extensions/browser/extensions_browser_client.h"

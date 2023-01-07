@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "url/gurl.h"
 
 namespace ash {

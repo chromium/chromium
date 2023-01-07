@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/browser/policy_error_map.h"

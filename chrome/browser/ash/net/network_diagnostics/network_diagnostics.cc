@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_ping_routine.h"

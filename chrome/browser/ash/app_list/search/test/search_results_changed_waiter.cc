@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 
 namespace app_list {

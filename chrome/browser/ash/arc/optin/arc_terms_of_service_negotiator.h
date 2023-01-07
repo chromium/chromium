@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_NEGOTIATOR_H_
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_NEGOTIATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace arc {
 

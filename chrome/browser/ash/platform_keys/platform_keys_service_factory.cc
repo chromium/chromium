@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"

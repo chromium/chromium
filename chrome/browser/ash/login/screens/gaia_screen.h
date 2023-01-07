@@ -9,8 +9,8 @@
 
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

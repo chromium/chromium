@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 
 // Enum specifying possible states of biometric authentication availability on

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_MOCK_FILE_TRANSFER_ANALYSIS_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_MOCK_FILE_TRANSFER_ANALYSIS_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"

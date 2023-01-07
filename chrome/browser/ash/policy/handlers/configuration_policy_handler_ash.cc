@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"

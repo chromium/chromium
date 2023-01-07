@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/external_data/device_cloud_external_data_policy_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"

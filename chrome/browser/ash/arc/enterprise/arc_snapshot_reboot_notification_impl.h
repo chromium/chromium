@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_IMPL_H_
 
 #include "ash/components/arc/enterprise/arc_snapshot_reboot_notification.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

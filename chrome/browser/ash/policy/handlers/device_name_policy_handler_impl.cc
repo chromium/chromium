@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"

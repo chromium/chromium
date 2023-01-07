@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/syslog_logging.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"

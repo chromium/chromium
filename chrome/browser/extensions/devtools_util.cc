@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/devtools_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_host.h"

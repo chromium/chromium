@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
 #define CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/installable/installed_webapp_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"

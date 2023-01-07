@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/browser_process.h"

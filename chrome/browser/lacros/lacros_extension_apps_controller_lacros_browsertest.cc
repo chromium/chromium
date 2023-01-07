@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"

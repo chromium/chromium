@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
 #include "chrome/browser/ash/printing/oauth2/http_exchange.h"

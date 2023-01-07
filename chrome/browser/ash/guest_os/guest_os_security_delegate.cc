@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/server/wayland_server_controller.h"
 

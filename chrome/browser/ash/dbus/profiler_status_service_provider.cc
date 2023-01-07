@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "dbus/message.h"

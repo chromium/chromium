@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
-#include "base/callback.h"
 #include "base/files/file_path_watcher.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

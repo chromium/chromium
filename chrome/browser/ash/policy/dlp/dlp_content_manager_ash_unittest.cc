@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
-#include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

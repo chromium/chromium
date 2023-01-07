@@ -6,8 +6,8 @@
 
 #include <set>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/blocklist.h"

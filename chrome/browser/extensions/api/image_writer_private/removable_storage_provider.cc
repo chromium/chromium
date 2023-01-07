@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

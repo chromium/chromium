@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"

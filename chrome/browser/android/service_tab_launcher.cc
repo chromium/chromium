@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/android/chrome_jni_headers/ServiceTabLauncher_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"

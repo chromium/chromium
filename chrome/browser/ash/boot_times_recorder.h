@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "content/public/browser/notification_observer.h"

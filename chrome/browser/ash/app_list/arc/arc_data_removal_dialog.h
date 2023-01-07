@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_DATA_REMOVAL_DIALOG_H_
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_DATA_REMOVAL_DIALOG_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 class Profile;
 

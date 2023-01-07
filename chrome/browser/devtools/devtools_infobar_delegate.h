@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {

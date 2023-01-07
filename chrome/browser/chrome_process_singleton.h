@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_
 #define CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/process_singleton_modal_dialog_lock.h"
 #include "chrome/browser/process_singleton_startup_lock.h"

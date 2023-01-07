@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

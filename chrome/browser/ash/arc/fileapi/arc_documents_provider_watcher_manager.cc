@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_watcher_manager.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "content/public/browser/browser_task_traits.h"

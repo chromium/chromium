@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"

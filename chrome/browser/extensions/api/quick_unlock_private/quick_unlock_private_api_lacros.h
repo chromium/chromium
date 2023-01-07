@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_LACROS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_LACROS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "extensions/browser/extension_function.h"

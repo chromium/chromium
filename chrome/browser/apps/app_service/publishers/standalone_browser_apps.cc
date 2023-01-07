@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"

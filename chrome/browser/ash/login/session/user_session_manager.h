@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"

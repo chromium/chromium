@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/dbus/lock_to_single_user_service_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

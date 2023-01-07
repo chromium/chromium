@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"

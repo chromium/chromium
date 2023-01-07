@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"

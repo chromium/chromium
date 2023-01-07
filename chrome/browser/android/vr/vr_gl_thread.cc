@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/version.h"
 #include "chrome/browser/android/vr/metrics_util_android.h"
 #include "chrome/browser/android/vr/ui_factory.h"

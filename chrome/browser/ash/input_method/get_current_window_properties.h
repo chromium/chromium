@@ -7,7 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_GET_CURRENT_WINDOW_PROPERTIES_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_GET_CURRENT_WINDOW_PROPERTIES_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

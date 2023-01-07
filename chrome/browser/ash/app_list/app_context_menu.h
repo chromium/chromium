@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"

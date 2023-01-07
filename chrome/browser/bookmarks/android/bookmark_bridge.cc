@@ -16,10 +16,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/power/ml/smart_dim/download_worker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 

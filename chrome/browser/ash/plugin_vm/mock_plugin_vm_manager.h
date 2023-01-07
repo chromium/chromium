@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_MOCK_PLUGIN_VM_MANAGER_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_MOCK_PLUGIN_VM_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

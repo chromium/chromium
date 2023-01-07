@@ -4,9 +4,9 @@
 
 #include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"

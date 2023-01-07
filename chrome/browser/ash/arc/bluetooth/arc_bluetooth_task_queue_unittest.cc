@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

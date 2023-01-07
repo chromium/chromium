@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/platform_apps/platform_app_navigation_redirector.h"
 
 #include "apps/launcher.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"

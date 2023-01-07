@@ -6,8 +6,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"

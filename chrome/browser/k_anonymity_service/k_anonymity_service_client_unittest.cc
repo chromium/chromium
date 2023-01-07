@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"

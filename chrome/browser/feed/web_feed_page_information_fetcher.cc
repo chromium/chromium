@@ -4,7 +4,7 @@
 
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/feed/rss_links_fetcher.h"
 #include "content/public/browser/render_frame_host.h"

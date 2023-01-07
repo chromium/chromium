@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chromeos/ash/components/disks/disk.h"

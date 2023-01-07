@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

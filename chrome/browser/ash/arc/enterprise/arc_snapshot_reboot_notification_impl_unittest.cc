@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

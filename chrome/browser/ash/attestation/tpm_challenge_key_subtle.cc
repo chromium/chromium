@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"

@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"

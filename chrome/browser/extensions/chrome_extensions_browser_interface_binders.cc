@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"

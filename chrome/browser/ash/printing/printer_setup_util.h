@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINTER_SETUP_UTIL_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINTER_SETUP_UTIL_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chromeos/printing/printer_configuration.h"

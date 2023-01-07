@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 
 #include "ash/public/cpp/shelf_model.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_running_on_chromeos.h"

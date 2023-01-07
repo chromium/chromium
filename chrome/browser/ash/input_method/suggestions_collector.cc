@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/suggestions_collector.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 

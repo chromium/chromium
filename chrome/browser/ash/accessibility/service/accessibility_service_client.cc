@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include <memory>
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"

@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/print_common.mojom.h"
-#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/platform_file.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"

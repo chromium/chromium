@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_ping_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chromeos/services/network_config/in_process_instance.h"

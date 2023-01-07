@@ -12,7 +12,7 @@
 #include "apps/app_lifetime_monitor_factory.h"
 #include "apps/switches.h"
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
 #import "base/mac/launch_services_util.h"
 #include "base/mac/mac_util.h"

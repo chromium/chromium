@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_LOG_UPLOADER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_LOG_UPLOADER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_uploader_base.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"

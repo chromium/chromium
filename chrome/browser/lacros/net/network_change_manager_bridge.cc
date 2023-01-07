@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"

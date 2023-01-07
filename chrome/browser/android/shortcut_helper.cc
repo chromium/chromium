@@ -12,7 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 #include "components/webapps/browser/android/shortcut_info.h"

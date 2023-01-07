@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"

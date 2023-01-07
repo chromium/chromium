@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/system/input_device_settings.h"

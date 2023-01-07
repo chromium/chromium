@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/history_report/get_all_urls_from_history_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"

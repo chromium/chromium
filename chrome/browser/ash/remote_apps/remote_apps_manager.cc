@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/image_downloader.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"

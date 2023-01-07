@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 
 namespace ash {

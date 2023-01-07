@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"

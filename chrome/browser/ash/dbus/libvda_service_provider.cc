@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

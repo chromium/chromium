@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_SOFT_BIND_ATTESTATION_FLOW_H_
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/account_id/account_id.h"
 
 namespace ash::attestation {

@@ -10,8 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"

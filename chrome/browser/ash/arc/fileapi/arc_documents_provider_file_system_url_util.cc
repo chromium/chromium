@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

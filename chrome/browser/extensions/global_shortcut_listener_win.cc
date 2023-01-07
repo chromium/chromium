@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/global_shortcut_listener_win.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/win/win_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"

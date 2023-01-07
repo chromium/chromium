@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_KEY_LOADER_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_KEY_LOADER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ownership/owner_key_util.h"

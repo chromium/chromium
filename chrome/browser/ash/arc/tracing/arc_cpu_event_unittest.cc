@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_cpu_event.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

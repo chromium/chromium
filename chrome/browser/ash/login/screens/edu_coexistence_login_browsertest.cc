@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"

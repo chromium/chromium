@@ -4,8 +4,8 @@
 
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"

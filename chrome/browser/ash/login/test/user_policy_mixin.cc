@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"

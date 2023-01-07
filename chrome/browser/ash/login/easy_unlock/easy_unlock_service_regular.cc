@@ -11,8 +11,8 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/base64url.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/linux_util.h"
 #include "base/logging.h"

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/idle_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

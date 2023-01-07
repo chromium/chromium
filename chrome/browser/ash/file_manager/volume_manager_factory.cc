@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"

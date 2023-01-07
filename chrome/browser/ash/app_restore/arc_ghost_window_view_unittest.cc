@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
 #include "ash/components/arc/arc_features.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"

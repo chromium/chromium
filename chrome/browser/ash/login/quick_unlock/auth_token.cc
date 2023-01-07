@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"

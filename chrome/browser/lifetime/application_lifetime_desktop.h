@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_DESKTOP_H_
 #define CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_DESKTOP_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 
 static_assert(!BUILDFLAG(IS_ANDROID), "For non-Android Chrome only");
 

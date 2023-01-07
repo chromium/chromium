@@ -14,7 +14,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_utils.h"

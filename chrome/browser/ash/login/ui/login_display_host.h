@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/customization/customization_document.h"

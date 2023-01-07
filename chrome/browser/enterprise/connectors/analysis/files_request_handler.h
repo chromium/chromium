@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"

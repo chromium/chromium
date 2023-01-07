@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"

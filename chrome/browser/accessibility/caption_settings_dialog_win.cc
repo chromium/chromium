@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 
 namespace {

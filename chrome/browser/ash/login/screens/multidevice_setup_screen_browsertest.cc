@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/js_checker.h"

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"

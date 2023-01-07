@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer_factory.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"

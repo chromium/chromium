@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"

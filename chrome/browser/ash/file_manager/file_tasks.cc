@@ -14,7 +14,6 @@
 #include "apps/launcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

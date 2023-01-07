@@ -7,7 +7,7 @@
 #include <sstream>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"

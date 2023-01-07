@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/printing/print_servers_policy_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/printing/print_servers_provider.h"
 #include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "chrome/browser/browser_process.h"

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

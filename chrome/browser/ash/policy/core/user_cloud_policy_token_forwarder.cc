@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

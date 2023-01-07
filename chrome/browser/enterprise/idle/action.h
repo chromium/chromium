@@ -8,9 +8,9 @@
 #include <queue>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/browsing_data_remover.h"
 

@@ -9,7 +9,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/notifications/notification_display_service.h"

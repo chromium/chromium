@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"

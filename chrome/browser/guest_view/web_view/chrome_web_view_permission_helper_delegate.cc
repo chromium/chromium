@@ -7,7 +7,7 @@
 #include <map>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_context.h"

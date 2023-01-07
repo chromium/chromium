@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
 #include "ash/constants/app_types.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"

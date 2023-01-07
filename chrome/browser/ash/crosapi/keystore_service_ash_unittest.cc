@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

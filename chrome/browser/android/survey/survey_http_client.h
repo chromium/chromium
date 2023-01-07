@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/android/survey/http_client_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

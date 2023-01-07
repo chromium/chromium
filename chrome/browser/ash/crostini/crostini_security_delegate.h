@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SECURITY_DELEGATE_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SECURITY_DELEGATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 
 class Profile;

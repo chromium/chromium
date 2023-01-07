@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"

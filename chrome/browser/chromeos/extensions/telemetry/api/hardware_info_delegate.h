@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 

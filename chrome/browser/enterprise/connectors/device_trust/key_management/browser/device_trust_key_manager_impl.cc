@@ -4,9 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"

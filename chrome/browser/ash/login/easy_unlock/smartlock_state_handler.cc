@@ -10,7 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"

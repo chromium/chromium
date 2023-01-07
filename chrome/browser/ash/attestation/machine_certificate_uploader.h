@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_H_
 #define CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 namespace attestation {

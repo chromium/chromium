@@ -7,9 +7,9 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"

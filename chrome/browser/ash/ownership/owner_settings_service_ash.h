@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"

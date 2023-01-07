@@ -4,8 +4,8 @@
 
 #include "chrome/browser/feed/web_feed_ui_util.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/feed/web_feed_util.h"

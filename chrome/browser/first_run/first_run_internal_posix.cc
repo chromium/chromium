@@ -4,7 +4,7 @@
 
 #include "chrome/browser/first_run/first_run_internal.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

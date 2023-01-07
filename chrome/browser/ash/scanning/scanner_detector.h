@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/scanning/scanner.h"
 #include "chromeos/chromeos_export.h"
 

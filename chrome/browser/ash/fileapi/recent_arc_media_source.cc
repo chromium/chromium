@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"

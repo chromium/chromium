@@ -4,7 +4,7 @@
 
 #include "chrome/browser/feed/web_feed_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"

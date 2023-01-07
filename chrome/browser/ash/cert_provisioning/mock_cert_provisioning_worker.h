@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_invalidator.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"

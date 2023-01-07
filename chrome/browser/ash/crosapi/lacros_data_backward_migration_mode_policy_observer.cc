@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/lacros_data_backward_migration_mode_policy_observer.h"
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/browser_process.h"

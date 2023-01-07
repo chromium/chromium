@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ash/webui/personalization_app/search/search_handler.h"
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"

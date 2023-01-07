@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"

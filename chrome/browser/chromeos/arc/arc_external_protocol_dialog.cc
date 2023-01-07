@@ -6,7 +6,7 @@
 
 #include <map>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"

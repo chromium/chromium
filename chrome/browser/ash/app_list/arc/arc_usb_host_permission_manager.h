@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/usb/usb_host_ui_delegate.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"

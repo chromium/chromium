@@ -5,9 +5,9 @@
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"

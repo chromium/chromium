@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"

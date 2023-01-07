@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/android/vr/vr_module_provider.h"
 #include "chrome/browser/android/vr/vrcore_install_helper.h"

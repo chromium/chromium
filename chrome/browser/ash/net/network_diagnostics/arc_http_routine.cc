@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "net/http/http_status_code.h"

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_LOADER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_LOADER_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 class Profile;

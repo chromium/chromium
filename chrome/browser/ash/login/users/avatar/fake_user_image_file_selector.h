@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash {

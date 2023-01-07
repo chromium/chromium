@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_THIRD_PARTY_DATA_REMOVER_H_
 #define CHROME_BROWSER_BROWSING_DATA_THIRD_PARTY_DATA_REMOVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/browser_context.h"
 
 // This function clears cookies available in cross-site contexts (i.e.

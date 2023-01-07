@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/debug/leak_annotations.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"

@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/policy/reporting/install_event_log_manager.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

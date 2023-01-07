@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/font_pref_change_notifier.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/common/pref_names_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

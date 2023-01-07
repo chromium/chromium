@@ -5,7 +5,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/android/shopping_service_jni/PriceTrackingUtils_jni.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"

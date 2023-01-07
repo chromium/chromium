@@ -4,7 +4,7 @@
 
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"

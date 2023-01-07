@@ -8,7 +8,7 @@
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/barrier_closure.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"

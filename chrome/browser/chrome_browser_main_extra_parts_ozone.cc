@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts_ozone.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "content/public/browser/browser_task_traits.h"

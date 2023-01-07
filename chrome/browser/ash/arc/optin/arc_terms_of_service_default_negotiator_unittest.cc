@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
 #include "base/values.h"

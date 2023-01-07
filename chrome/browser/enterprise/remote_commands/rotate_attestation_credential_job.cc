@@ -4,8 +4,8 @@
 
 #include "chrome/browser/enterprise/remote_commands/rotate_attestation_credential_job.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"

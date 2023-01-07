@@ -6,7 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system_notification_builder.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
 #include "chrome/app/vector_icons/vector_icons.h"

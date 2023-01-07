@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"

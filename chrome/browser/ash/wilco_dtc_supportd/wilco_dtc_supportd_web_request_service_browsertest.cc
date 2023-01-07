@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"

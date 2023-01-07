@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_store.h"

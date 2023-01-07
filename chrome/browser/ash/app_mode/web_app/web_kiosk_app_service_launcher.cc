@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
 #include <memory>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

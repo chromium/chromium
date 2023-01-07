@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
