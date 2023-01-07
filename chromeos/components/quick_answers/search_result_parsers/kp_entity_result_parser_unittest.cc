@@ -31,19 +31,19 @@ class KpEntityResultParserTest : public testing::Test {
 };
 
 TEST_F(KpEntityResultParserTest, SuccessWithRating) {
-  Value result(Value::Type::DICTIONARY);
-  result.SetDoublePath(
+  Value::Dict result;
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
       "aggregateRating.averageScore",
       4.5);
-  result.SetStringPath(
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
       "aggregateRating.aggregatedCount",
       "100");
 
   QuickAnswer quick_answer;
 
-  EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
+  EXPECT_TRUE(parser_->Parse(result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
@@ -53,19 +53,19 @@ TEST_F(KpEntityResultParserTest, SuccessWithRating) {
 }
 
 TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
-  Value result(Value::Type::DICTIONARY);
-  result.SetDoublePath(
+  Value::Dict result;
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
       "aggregateRating.averageScore",
       4.52);
-  result.SetStringPath(
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
       "aggregateRating.aggregatedCount",
       "100");
 
   QuickAnswer quick_answer;
 
-  EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
+  EXPECT_TRUE(parser_->Parse(result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
@@ -76,13 +76,13 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 
-  result.SetDoublePath(
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
       "aggregateRating.averageScore",
       4.56);
 
   QuickAnswer quick_answer2;
-  EXPECT_TRUE(parser_->Parse(&result, &quick_answer2));
+  EXPECT_TRUE(parser_->Parse(result, &quick_answer2));
 
   EXPECT_EQ(0u, quick_answer2.title.size());
   EXPECT_EQ(1u, quick_answer2.first_answer_row.size());
@@ -94,14 +94,14 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
 }
 
 TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
-  Value result(Value::Type::DICTIONARY);
-  result.SetStringPath(
+  Value::Dict result;
+  result.SetByDottedPath(
       "knowledgePanelEntityResult.entity.localizedKnownForReason",
       "44th U.S. President");
 
   QuickAnswer quick_answer;
 
-  EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
+  EXPECT_TRUE(parser_->Parse(result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
@@ -114,25 +114,25 @@ TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
 }
 
 TEST_F(KpEntityResultParserTest, EmptyValue) {
-  Value result(Value::Type::DICTIONARY);
+  Value::Dict result;
   QuickAnswer quick_answer;
-  EXPECT_FALSE(parser_->Parse(&result, &quick_answer));
+  EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }
 
 TEST_F(KpEntityResultParserTest, IncorrectType) {
-  Value result(Value::Type::DICTIONARY);
-  result.SetIntPath("ratingsAndReviews.google.aggregateRating.aggregatedCount",
-                    100);
+  Value::Dict result;
+  result.SetByDottedPath(
+      "ratingsAndReviews.google.aggregateRating.aggregatedCount", 100);
   QuickAnswer quick_answer;
-  EXPECT_FALSE(parser_->Parse(&result, &quick_answer));
+  EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }
 
 TEST_F(KpEntityResultParserTest, IncorrectPath) {
-  Value result(Value::Type::DICTIONARY);
-  result.SetStringPath(
+  Value::Dict result;
+  result.SetByDottedPath(
       "ratingsAndReviews.google.aggregateRating.aggregatedCounts", "100");
   QuickAnswer quick_answer;
-  EXPECT_FALSE(parser_->Parse(&result, &quick_answer));
+  EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }
 
 }  // namespace quick_answers

@@ -56,13 +56,14 @@ void SearchResponseParser::OnJsonParsed(
   }
 
   // Get the first result.
-  const Value* entries = result->FindListPath("results");
+  const Value::List* entries =
+      result->GetDict().FindListByDottedPath("results");
   if (!entries) {
     std::move(complete_callback_).Run(nullptr);
     return;
   }
 
-  for (const auto& entry : entries->GetList()) {
+  for (const auto& entry : *entries) {
     auto quick_answer = std::make_unique<QuickAnswer>();
     if (ProcessResult(&entry, quick_answer.get())) {
       std::move(complete_callback_).Run(std::move(quick_answer));
@@ -75,7 +76,8 @@ void SearchResponseParser::OnJsonParsed(
 
 bool SearchResponseParser::ProcessResult(const Value* result,
                                          QuickAnswer* quick_answer) {
-  auto one_namespace_type = result->FindIntPath("oneNamespaceType");
+  const base::Value::Dict& dict = result->GetDict();
+  auto one_namespace_type = dict.FindInt("oneNamespaceType");
   if (!one_namespace_type.has_value()) {
     // Can't find valid one namespace type from the response.
     LOG(ERROR) << "Can't find valid one namespace type from the response.";
@@ -87,7 +89,7 @@ bool SearchResponseParser::ProcessResult(const Value* result,
   if (!result_parser)
     return false;
 
-  return result_parser->Parse(result, quick_answer);
+  return result_parser->Parse(dict, quick_answer);
 }
 
 }  // namespace quick_answers

@@ -42,14 +42,14 @@ constexpr base::StringPiece kSourceLanguageKey = "source";
 constexpr base::StringPiece kTargetLanguageKey = "target";
 
 std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
-  Value payload(Value::Type::DICTIONARY);
+  Value::Dict payload;
 
-  Value query(Value::Type::LIST);
+  Value::List query;
   query.Append(intent_info.intent_text);
-  payload.SetKey(kQueryKey, std::move(query));
+  payload.Set(kQueryKey, std::move(query));
 
-  payload.SetKey(kSourceLanguageKey, Value(intent_info.source_language));
-  payload.SetKey(kTargetLanguageKey, Value(intent_info.device_language));
+  payload.Set(kSourceLanguageKey, intent_info.source_language);
+  payload.Set(kTargetLanguageKey, intent_info.device_language);
 
   std::string request_payload_str;
   base::JSONWriter::Write(payload, &request_payload_str);

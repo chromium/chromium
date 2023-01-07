@@ -42,17 +42,18 @@ void TranslationResponseParser::OnJsonParsed(
     return;
   }
 
-  auto* translations = result->FindListPath("data.translations");
+  auto* translations =
+      result->GetDict().FindListByDottedPath("data.translations");
   if (!translations) {
     LOG(ERROR) << "Can't find translations result list.";
     std::move(complete_callback_).Run(nullptr);
     return;
   }
 
-  DCHECK(translations->GetList().size() == 1);
+  DCHECK(translations->size() == 1);
 
   const std::string* translated_text_ptr =
-      translations->GetList().front().FindStringPath("translatedText");
+      translations->front().GetDict().FindStringByDottedPath("translatedText");
   if (!translated_text_ptr) {
     LOG(ERROR) << "Can't find a translated text.";
     std::move(complete_callback_).Run(nullptr);

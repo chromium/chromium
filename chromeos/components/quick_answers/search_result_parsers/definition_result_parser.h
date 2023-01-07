@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_DEFINITION_RESULT_PARSER_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_DEFINITION_RESULT_PARSER_H_
 
+#include "base/values.h"
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 
 namespace base {
 class GURL;
-class Value;
 }  // namespace base
 
 namespace quick_answers {
@@ -17,7 +17,8 @@ namespace quick_answers {
 class DefinitionResultParser : public ResultParser {
  public:
   // ResultParser:
-  bool Parse(const base::Value* result, QuickAnswer* quick_answer) override;
+  bool Parse(const base::Value::Dict& result,
+             QuickAnswer* quick_answer) override;
 
  private:
   const base::Value::Dict* ExtractFirstSenseFamily(

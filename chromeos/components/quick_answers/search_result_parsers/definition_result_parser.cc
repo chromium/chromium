@@ -32,10 +32,10 @@ constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
 
 }  // namespace
 
-bool DefinitionResultParser::Parse(const base::Value* result,
+bool DefinitionResultParser::Parse(const base::Value::Dict& result,
                                    QuickAnswer* quick_answer) {
   const Value::Dict* first_entry =
-      GetFirstListElement(result->GetDict(), kDictionaryEntriesPath);
+      GetFirstListElement(result, kDictionaryEntriesPath);
   if (!first_entry) {
     LOG(ERROR) << "Can't find a definition entry.";
     return false;
@@ -50,8 +50,7 @@ bool DefinitionResultParser::Parse(const base::Value* result,
   const std::string* phonetics = ExtractPhoneticsText(*first_entry);
 
   // If query term path not found, fallback to use headword.
-  const std::string* query =
-      result->GetDict().FindStringByDottedPath(kQueryTermPath);
+  const std::string* query = result.FindStringByDottedPath(kQueryTermPath);
   if (!query)
     query = first_entry->FindStringByDottedPath(kHeadwordKey);
   if (!query) {

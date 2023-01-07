@@ -19,7 +19,8 @@ class ResultParser {
   virtual ~ResultParser() = default;
 
   // Parse the result into |quick_answer|.
-  virtual bool Parse(const base::Value* result, QuickAnswer* quick_answer) = 0;
+  virtual bool Parse(const base::Value::Dict& result,
+                     QuickAnswer* quick_answer) = 0;
 
  protected:
   // Helper function to get the first element in a value list, which is expected

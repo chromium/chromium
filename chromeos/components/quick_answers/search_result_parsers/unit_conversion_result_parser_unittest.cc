@@ -39,35 +39,35 @@ constexpr char kDestRawTextGram[] = "100000 grams";
 Value CreateUnit(double rate_a,
                  const std::string& name,
                  const std::string& category = std::string()) {
-  Value unit(Type::DICTIONARY);
-  unit.SetDoubleKey(kConversionRateAPath, rate_a);
-  unit.SetStringKey(kNamePath, name);
+  Value::Dict unit;
+  unit.Set(kConversionRateAPath, rate_a);
+  unit.Set(kNamePath, name);
   if (!category.empty())
-    unit.SetStringKey(kCategoryPath, category);
+    unit.Set(kCategoryPath, category);
 
-  return unit;
+  return Value(std::move(unit));
 }
 
 Value BuildMassRuleSet() {
-  Value rule_set(Type::LIST);
-  Value conversion(Type::DICTIONARY);
-  Value units(Type::LIST);
+  Value::List rule_set;
+  Value::Dict conversion;
+  Value::List units;
 
-  conversion.SetStringKey(kCategoryPath, kMassCategory);
+  conversion.Set(kCategoryPath, kMassCategory);
   units.Append(CreateUnit(kKilogramRateA, kKilogramName));
   units.Append(CreateUnit(kGramRateA, kGramName));
   units.Append(CreateUnit(kPoundRateA, kPoundName));
-  conversion.SetKey(kUnitsPath, std::move(units));
+  conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
-  return rule_set;
+  return Value(std::move(rule_set));
 }
 
 }  // namespace
 
 class UnitConversionResultParserTest : public testing::Test {
  public:
-  UnitConversionResultParserTest() : result_(Type::DICTIONARY) {}
+  UnitConversionResultParserTest() = default;
 
   UnitConversionResultParserTest(const UnitConversionResultParserTest&) =
       delete;
@@ -75,31 +75,31 @@ class UnitConversionResultParserTest : public testing::Test {
       const UnitConversionResultParserTest&) = delete;
 
   void SetDestText(const std::string& text) {
-    result_.SetStringPath(kDestTextPath, text);
+    result_.SetByDottedPath(kDestTextPath, text);
   }
 
   void SetSourceAmount(const double value) {
-    result_.SetDoublePath(kSourceAmountPath, value);
+    result_.SetByDottedPath(kSourceAmountPath, value);
   }
 
   void SetDestAmount(const double value) {
-    result_.SetDoublePath(kDestAmountPath, value);
+    result_.SetByDottedPath(kDestAmountPath, value);
   }
 
   void AddSourceUnit(Value src_unit) {
-    result_.SetPath(kSourceUnitPath, std::move(src_unit));
+    result_.SetByDottedPath(kSourceUnitPath, std::move(src_unit));
   }
 
   void AddRuleSet(Value rule_set) {
-    result_.SetPath(kRuleSetPath, std::move(rule_set));
+    result_.SetByDottedPath(kRuleSetPath, std::move(rule_set));
   }
 
   bool Parse(QuickAnswer* quick_answer) {
-    return parser_.Parse(&result_, quick_answer);
+    return parser_.Parse(result_, quick_answer);
   }
 
  protected:
-  Value result_;
+  Value::Dict result_;
 
   UnitConversionResultParser parser_;
 };
@@ -112,7 +112,7 @@ TEST_F(UnitConversionResultParserTest, ParseWithEmptyValueShouldReturnFalse) {
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithIncorrectTypeShouldReturnFalse) {
-  result_.SetIntPath(kDestTextPath, 1);
+  result_.SetByDottedPath(kDestTextPath, 1);
   QuickAnswer quick_answer;
 
   EXPECT_FALSE(Parse(&quick_answer));
@@ -120,7 +120,7 @@ TEST_F(UnitConversionResultParserTest,
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithIncorrectPathShouldReturnFalse) {
-  result_.SetStringPath("WrongPath", kDestRawTextPound);
+  result_.Set("WrongPath", kDestRawTextPound);
   QuickAnswer quick_answer;
 
   EXPECT_FALSE(Parse(&quick_answer));
