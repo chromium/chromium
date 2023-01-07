@@ -85,7 +85,7 @@
 crbug.com/1079393 [ win intel-0x3e92 ] InfoCollection_direct_composition [ Failure ]
 
 # InfoCollection_basic is flaky on Fuchsia.
-crbug.com/1154597 [ fuchsia ] InfoCollection_basic [ RetryOnFailure ]
+crbug.com/1154597 [ angle-vulkan fuchsia fuchsia-chrome intel-gen-9 ] InfoCollection_basic [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
