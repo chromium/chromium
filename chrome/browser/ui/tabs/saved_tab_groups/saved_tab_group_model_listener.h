@@ -45,7 +45,14 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
 
   bool ContainsTabGroup(tab_groups::TabGroupId group_id) const;
 
-  base::Token TrackWebContents(content::WebContents* web_contents);
+  // Starts tracking webcontents for changes and return the token. If its
+  // already tracked, just return the token.
+  base::Token GetOrCreateTrackedIDForWebContents(
+      content::WebContents* web_contents);
+
+  // Stops tracking the webcontents for changes. CHECKS if not currently
+  // tracked.
+  void StopTrackingWebContents(content::WebContents* web_contents);
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
@@ -55,6 +62,12 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
 
   Browser* browser() { return browser_; }
   SavedTabGroupModel* saved_tab_group_model() { return model_; }
+
+  // Testing Accessors.
+  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
+  GetWebContentsTokenMapForTesting() {
+    return web_contents_to_tab_id_map_;
+  }
 
  private:
   std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>
@@ -80,9 +93,14 @@ class SavedTabGroupModelListener : public BrowserListObserver {
   TabStripModel* GetTabStripModelWithTabGroupId(
       tab_groups::TabGroupId group_id);
 
-  absl::optional<base::Token> TrackWebContents(
+  // Starts tracking webcontents on a specific browser.
+  base::Token GetOrCreateTrackedIDForWebContents(
       Browser* browser,
       content::WebContents* web_contents);
+
+  // Stops tracking webcontents on a specific browser.
+  void StopTrackingWebContents(Browser* browser,
+                               content::WebContents* web_contents);
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

@@ -98,16 +98,14 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
             WindowOpenDisposition::NEW_BACKGROUND_TAB);
 
     if (!created_contents) {
-      return;
+      continue;
     }
 
-    absl::optional<base::Token> maybe_token =
-        listener_.TrackWebContents(browser, created_contents);
-    if (maybe_token.has_value()) {
-      model_.Get(saved_tab.saved_group_guid())
-          ->GetTab(saved_tab.saved_tab_guid())
-          ->SetLocalTabID(maybe_token.value());
-    }
+    base::Token token =
+        listener_.GetOrCreateTrackedIDForWebContents(browser, created_contents);
+    model_.Get(saved_tab.saved_group_guid())
+        ->GetTab(saved_tab.saved_tab_guid())
+        ->SetLocalTabID(token);
 
     opened_web_contents.emplace_back(created_contents);
   }
@@ -148,4 +146,87 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
           ->GetFirstTab();
   DCHECK(first_tab.has_value());
   tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
+}
+
+void SavedTabGroupKeyedService::SaveGroup(
+    const tab_groups::TabGroupId& group_id,
+    Browser* browser) {
+  Browser* browser_owning_tab_group =
+      browser ? browser : listener_.GetBrowserWithTabGroupId(group_id);
+  CHECK(browser_owning_tab_group);
+
+  TabStripModel* tab_strip_model = browser_owning_tab_group->tab_strip_model();
+  CHECK(tab_strip_model);
+  CHECK(tab_strip_model->group_model());
+
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group);
+
+  SavedTabGroup saved_tab_group(tab_group->visual_data()->title(),
+                                tab_group->visual_data()->color(), {},
+                                absl::nullopt, absl::nullopt, tab_group->id());
+
+  // Build the SavedTabGroupTabs, track the webcontents, and add them to the
+  // group.
+  const gfx::Range tab_range = tab_group->ListTabs();
+  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    CHECK(web_contents);
+
+    SavedTabGroupTab saved_tab_group_tab =
+        SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+            web_contents, saved_tab_group.saved_guid());
+
+    base::Token token = listener_.GetOrCreateTrackedIDForWebContents(
+        browser_owning_tab_group, web_contents);
+    saved_tab_group_tab.SetLocalTabID(token);
+
+    saved_tab_group.AddTab(saved_tab_group.saved_tabs().size(),
+                           std::move(saved_tab_group_tab));
+  }
+
+  model_.Add(std::move(saved_tab_group));
+}
+
+void SavedTabGroupKeyedService::UnsaveGroup(
+    const tab_groups::TabGroupId& group_id) {
+  // Get the guid since disconnect removes the local id.
+  SavedTabGroup* group = model_.Get(group_id);
+  CHECK(group);
+
+  // Stop listening to the local group.
+  DisconnectLocalTabGroup(group_id);
+
+  // Unsave the group.
+  model_.Remove(group->saved_guid());
+}
+
+void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  Browser* browser_owning_tab_group =
+      listener_.GetBrowserWithTabGroupId(group_id);
+  CHECK(browser_owning_tab_group);
+
+  TabStripModel* tab_strip_model = browser_owning_tab_group->tab_strip_model();
+  CHECK(tab_strip_model);
+  CHECK(tab_strip_model->group_model());
+
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group);
+
+  // Stop listening to all of the webcontents in the group.
+  const gfx::Range tab_range = tab_group->ListTabs();
+  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents =
+        browser_owning_tab_group->tab_strip_model()->GetWebContentsAt(i);
+    listener_.StopTrackingWebContents(browser_owning_tab_group, web_contents);
+  }
+
+  SavedTabGroup* group = model_.Get(group_id);
+  CHECK(group);
+
+  // Stop listening to the current tab group.
+  group->SetLocalGroupId(absl::nullopt);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_
 
 #include "base/guid.h"
+#include "components/tab_groups/tab_group_id.h"
 
 class Browser;
 
@@ -16,6 +17,21 @@ class SavedTabGroupController {
   virtual void OpenSavedTabGroupInBrowser(
       Browser* browser,
       const base::GUID& saved_group_guid) = 0;
+
+  // Saves a group. If browser is not defined this function looks for the tab
+  // group id in all browsers. Finds the TabGroup by groupid from all browsers,
+  // Constructs the tab group, and starts listening to all tabs.
+  virtual void SaveGroup(const tab_groups::TabGroupId& group_id,
+                         Browser* browser = nullptr) = 0;
+
+  // Unsaves a group. Finds the group_id in the list of saved tab groups and
+  // removes it. Stops Listening to all tabs.
+  virtual void UnsaveGroup(const tab_groups::TabGroupId& group_id) = 0;
+
+  // Stops listening to the Tab Group in the TabStrip. Removes the local tab
+  // group id and web content tokens.
+  virtual void DisconnectLocalTabGroup(
+      const tab_groups::TabGroupId& group_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_

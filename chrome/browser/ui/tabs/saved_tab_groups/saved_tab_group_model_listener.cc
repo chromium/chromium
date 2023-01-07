@@ -68,7 +68,7 @@ bool SavedTabGroupBrowserListener::ContainsTabGroup(
   return browser_->tab_strip_model()->group_model()->ContainsTabGroup(group_id);
 }
 
-base::Token SavedTabGroupBrowserListener::TrackWebContents(
+base::Token SavedTabGroupBrowserListener::GetOrCreateTrackedIDForWebContents(
     content::WebContents* web_contents) {
   if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
     web_contents_to_tab_id_map_.try_emplace(
@@ -76,6 +76,12 @@ base::Token SavedTabGroupBrowserListener::TrackWebContents(
   }
 
   return web_contents_to_tab_id_map_.at(web_contents).token();
+}
+
+void SavedTabGroupBrowserListener::StopTrackingWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents_to_tab_id_map_.count(web_contents) > 0);
+  web_contents_to_tab_id_map_.erase(web_contents);
 }
 
 void SavedTabGroupBrowserListener::OnTabGroupChanged(
@@ -208,13 +214,19 @@ TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
   return browser ? browser->tab_strip_model() : nullptr;
 }
 
-absl::optional<base::Token> SavedTabGroupModelListener::TrackWebContents(
+base::Token SavedTabGroupModelListener::GetOrCreateTrackedIDForWebContents(
     Browser* browser,
     content::WebContents* web_contents) {
-  if (observed_browser_listeners_.count(browser) == 0) {
-    return absl::nullopt;
-  }
-  return observed_browser_listeners_.at(browser).TrackWebContents(web_contents);
+  CHECK(observed_browser_listeners_.count(browser) > 0);
+  return observed_browser_listeners_.at(browser)
+      .GetOrCreateTrackedIDForWebContents(web_contents);
+}
+
+void SavedTabGroupModelListener::StopTrackingWebContents(
+    Browser* browser,
+    content::WebContents* web_contents) {
+  CHECK(observed_browser_listeners_.count(browser) > 0);
+  observed_browser_listeners_.at(browser).StopTrackingWebContents(web_contents);
 }
 
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {

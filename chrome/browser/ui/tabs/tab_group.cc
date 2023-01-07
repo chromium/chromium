@@ -170,7 +170,7 @@ void TabGroup::UnsaveGroup() {
 
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
-  if (!backend || !backend->model())
-    return;
-  backend->model()->Remove(id_);
+  CHECK(backend);
+
+  backend->UnsaveGroup(id_);
 }

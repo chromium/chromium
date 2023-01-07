@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+#include "components/tab_groups/tab_group_id.h"
 
 class Profile;
 
@@ -33,6 +34,10 @@ class SavedTabGroupKeyedService : public KeyedService,
   // SavedTabGroupController
   void OpenSavedTabGroupInBrowser(Browser* browser,
                                   const base::GUID& saved_group_guid) override;
+  void SaveGroup(const tab_groups::TabGroupId& group_id,
+                 Browser* browser = nullptr) override;
+  void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
+  void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
 
  private:
   // Returns the ModelTypeStoreFactory tied to the current profile.

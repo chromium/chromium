@@ -6934,7 +6934,7 @@ test("unit_tests") {
       "../browser/ui/tabs/existing_window_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/pinned_tab_codec_unittest.cc",
       "../browser/ui/tabs/pinned_tab_service_unittest.cc",
-      "../browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener_unittest.cc",
+      "../browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service_unittest.cc",
       "../browser/ui/tabs/tab_menu_model_unittest.cc",
       "../browser/ui/tabs/tab_strip_model_stats_recorder_unittest.cc",
       "../browser/ui/tabs/tab_strip_model_unittest.cc",
