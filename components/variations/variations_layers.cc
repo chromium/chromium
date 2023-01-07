@@ -213,7 +213,7 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
   const auto& entropy_provider = (layer_proto.entropy_mode() != Layer::LOW)
                                      ? entropy_providers.default_entropy()
                                      : entropy_providers.low_entropy();
-  uint32_t salt = layer_proto.salt() || layer_proto.id();
+  uint32_t salt = layer_proto.salt() ? layer_proto.salt() : layer_proto.id();
   ValueInRange pseudorandom = {
       .value = entropy_provider.GetPseudorandomValue(salt, range),
       .range = static_cast<uint32_t>(range),

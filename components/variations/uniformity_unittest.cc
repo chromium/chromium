@@ -25,12 +25,15 @@ namespace {
 
 // For these tests, we use a small LES range to make the expectations simpler.
 const uint32_t kMaxEntropy = 20;
+const uint32_t kLayerId = 1;
+const uint32_t kLayerSalt = kLayerId;
 const char kStudyName[] = "Uniformity";
 
 struct LayerStudySeedOptions {
   bool layer_constrain_study = true;
   bool force_low_entropy_layer = true;
   bool force_low_entropy = false;
+  uint32_t salt = kLayerSalt;
   uint32_t slot_multiplier = 1;
 };
 
@@ -41,8 +44,8 @@ struct LayerStudySeedOptions {
 VariationsSeed LayerStudySeed(LayerStudySeedOptions options) {
   VariationsSeed seed;
   Layer* layer = seed.add_layers();
-  layer->set_id(42);
-  layer->set_salt(42);
+  layer->set_id(kLayerId);
+  layer->set_salt(options.salt);
   layer->set_num_slots(10 * options.slot_multiplier);
   if (options.force_low_entropy_layer)
     layer->set_entropy_mode(Layer::LOW);
@@ -64,7 +67,7 @@ VariationsSeed LayerStudySeed(LayerStudySeedOptions options) {
 
   if (options.layer_constrain_study) {
     LayerMemberReference* layer_membership = study->mutable_layer();
-    layer_membership->set_layer_id(42);
+    layer_membership->set_layer_id(kLayerId);
     layer_membership->set_layer_member_id(82);
   }
   // Use 3 arms, which does not divide
@@ -272,6 +275,23 @@ TEST(VariationsUniformityTest, DefaultEntropyLayerDefaultEntropyStudy) {
   }
 
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
+}
+
+// Not specifying the `salt` field for the layer should fall back to using the
+// `id` field as salt. Different salt values should result in different layer
+// exclusions.
+TEST(VariationsUniformityTest, LayerSalt) {
+  auto assignments = GetUniformityAssignments(
+      LayerStudySeed({.force_low_entropy_layer = false}));
+
+  auto assignments_salt_not_specified = GetUniformityAssignments(
+      LayerStudySeed({.force_low_entropy_layer = false, .salt = 0}));
+
+  auto assignments_alternative_salt = GetUniformityAssignments(LayerStudySeed(
+      {.force_low_entropy_layer = false, .salt = kLayerSalt + 1}));
+
+  EXPECT_EQ(assignments, assignments_salt_not_specified);
+  EXPECT_NE(assignments, assignments_alternative_salt);
 }
 
 // When enable_benchmarking is passed, layered studies should never activate.
