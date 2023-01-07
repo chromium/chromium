@@ -20,6 +20,7 @@
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
@@ -103,48 +104,6 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
          "AppCommand format: "
       << app_id << ": " << pv << ": " << name << ": " << command_id;
   return E_INVALIDARG;
-}
-
-// Formats a single `parameter` and returns the result. Any placeholder `%N` in
-// `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
-// be escaped with a `%`.
-//
-// Returns `absl::nullopt` if:
-// * a placeholder %N is encountered where N > substitutions.size().
-// * a literal `%` is not escaped with a `%`.
-//
-// See examples in the WinUtil*FormatAppCommandLine unit tests.
-absl::optional<std::wstring> FormatParameter(
-    const std::vector<std::wstring>& substitutions,
-    const std::wstring& parameter) {
-  DCHECK_LE(substitutions.size(), 9U);
-
-  std::wstring formatted_parameter;
-  for (auto i = parameter.begin(); i != parameter.end(); ++i) {
-    if (*i != '%') {
-      formatted_parameter.push_back(*i);
-      continue;
-    }
-
-    if (++i == parameter.end())
-      return absl::nullopt;
-
-    if (*i == '%') {
-      formatted_parameter.push_back('%');
-      continue;
-    }
-
-    if (*i < '1' || *i > '9')
-      return absl::nullopt;
-
-    const size_t index = *i - '1';
-    if (index >= substitutions.size())
-      return absl::nullopt;
-
-    formatted_parameter.append(substitutions[index]);
-  }
-
-  return formatted_parameter;
 }
 
 bool IsParentOf(int key, const base::FilePath& child) {
@@ -306,10 +265,15 @@ absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
   std::wstring formatted_command_line;
   for (size_t i = 0; i < parameters.size(); ++i) {
     absl::optional<std::wstring> formatted_parameter =
-        FormatParameter(substitutions, parameters[i]);
+        base::internal::DoReplaceStringPlaceholders(
+            /*format_string*/ parameters[i], /*subst*/ substitutions,
+            /*placeholder_prefix*/ L'%',
+            /*should_escape_multiple_placeholder_prefixes*/ false,
+            /*is_strict_mode*/ true, /*offsets*/ nullptr);
     if (!formatted_parameter) {
-      VLOG(1) << __func__ << " FormatParameter failed: " << parameters[i]
-              << ": " << substitutions.size();
+      VLOG(1) << __func__
+              << " base::internal::DoReplaceStringPercentPlaceholders failed: "
+              << parameters[i] << ": " << substitutions.size();
       return absl::nullopt;
     }
 

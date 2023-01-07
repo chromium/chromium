@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -128,7 +129,15 @@ std::wstring JoinString(std::initializer_list<WStringPiece> parts,
 std::wstring ReplaceStringPlaceholders(WStringPiece format_string,
                                        const std::vector<std::wstring>& subst,
                                        std::vector<size_t>* offsets) {
-  return internal::DoReplaceStringPlaceholders(format_string, subst, offsets);
+  absl::optional<std::wstring> replacement =
+      internal::DoReplaceStringPlaceholders(
+          format_string, subst,
+          /*placeholder_prefix*/ L'$',
+          /*should_escape_multiple_placeholder_prefixes*/ true,
+          /*is_strict_mode*/ false, offsets);
+
+  DCHECK(replacement);
+  return replacement.value();
 }
 
 }  // namespace base

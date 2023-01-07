@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_localalloc.h"
@@ -496,6 +497,62 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
         EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
         EXPECT_TRUE(process.WaitForExit(/*exit_code=*/nullptr));
       });
+}
+
+TEST(BaseInternalDoReplaceStringPlaceholdersTest,
+     ReplaceStringPercentPlaceholders) {
+  const std::vector<std::wstring> no_substitutions = {};
+  const std::vector<std::wstring> p1p2p3 = {L"p1", L"p2", L"p3"};
+
+  const struct {
+    const std::wstring format_string;
+    const wchar_t* expected_output;
+    const std::vector<std::wstring>& substitutions;
+  } test_cases[] = {
+      // Format string does not have any placeholders.
+      {L"abc=1 xyz=2 q", L"abc=1 xyz=2 q", no_substitutions},
+      {L" abc=1    xyz=2 q ", L" abc=1    xyz=2 q ", no_substitutions},
+
+      // Format string has placeholders.
+      {L"abc=%1", L"abc=p1", p1p2p3},
+      {L"abc=%1  %3 %2=x  ", L"abc=p1  p3 p2=x  ", p1p2p3},
+
+      // Format string has correctly escaped literal `%` signs.
+      {L"%1", L"p1", p1p2p3},
+      {L"%%1", L"%1", p1p2p3},
+      {L"%%%1", L"%p1", p1p2p3},
+      {L"abc%%def%%", L"abc%def%", p1p2p3},
+      {L"%12", L"p12", p1p2p3},
+      {L"%1%2", L"p1p2", p1p2p3},
+
+      // Format string has incorrect escaped `%` signs.
+      {L"unescaped percent %", nullptr, p1p2p3},
+      {L"unescaped %%% percents", nullptr, p1p2p3},
+      {L"always escape percent otherwise %error", nullptr, p1p2p3},
+      {L"% percents need to be escaped%", nullptr, p1p2p3},
+
+      // Format string has invalid values for the placeholder index.
+      {L"placeholder needs to be between 1 and 9, not %A", nullptr, p1p2p3},
+      {L"placeholder %4  is > size of substitutions vector", nullptr, p1p2p3},
+      {L"%1 is ok, but %8 or %9 is not ok", nullptr, p1p2p3},
+      {L"%4", nullptr, p1p2p3},
+      {L"abc=%1", nullptr, no_substitutions},
+  };
+
+  for (const auto& test_case : test_cases) {
+    absl::optional<std::wstring> output =
+        base::internal::DoReplaceStringPlaceholders(
+            /*format_string*/ test_case.format_string,
+            /*subst*/ test_case.substitutions,
+            /*placeholder_prefix*/ L'%',
+            /*should_escape_multiple_placeholder_prefixes*/ false,
+            /*is_strict_mode*/ true, /*offsets*/ nullptr);
+    if (test_case.expected_output) {
+      EXPECT_EQ(output.value(), test_case.expected_output);
+    } else {
+      EXPECT_EQ(output, absl::nullopt);
+    }
+  }
 }
 
 }  // namespace updater
