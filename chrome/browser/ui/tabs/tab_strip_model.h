@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -824,9 +823,6 @@ class TabStripModel : public TabGroupController {
   // TabStripModel is not re-entrancy safe. This member is used to guard public
   // methods that mutate state of |selection_model_| or |contents_data_|.
   bool reentrancy_guard_ = false;
-
-  // A recorder for recording tab switching input latency to UMA
-  TabSwitchEventLatencyRecorder tab_switch_event_latency_recorder_;
 
   TabStripScrubbingMetrics scrubbing_metrics_;
 

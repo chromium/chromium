@@ -566,34 +566,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Browser.Tabs.InputEventToSelectionTime{TabSwitchInputLatency}"
-    units="microseconds" expires_after="2019-08-31">
-  <owner>ejoe@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    The time between input event timestamp for tab switch and when the
-    TabStripModel begins processing the switch. {TabSwitchInputLatency}
-  </summary>
-  <token key="TabSwitchInputLatency">
-    <variant name=".Keyboard"
-        summary="The time it takes from receiving a keyboard input event that
-                 leads to the active tab changing to just before the TabStrip
-                 notifies its observers of the change."/>
-    <variant name=".Mouse"
-        summary="The time it takes from receiving a mouse input event that
-                 leads to the active tab changing to just before the TabStrip
-                 notifies its observers of the change."/>
-    <variant name=".Touch"
-        summary="The time it takes from receiving a touch input event that
-                 leads to the active tab changing to just before the TabStrip
-                 notifies its observers of the change."/>
-    <variant name=".Wheel"
-        summary="The time it takes from receiving a mouse scroll event that
-                 leads to the active tab changing to just before the TabStrip
-                 notifies its observers of the change."/>
-  </token>
-</histogram>
-
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
     units="microseconds" expires_after="2023-05-07">
   <owner>jonross@chromium.org</owner>

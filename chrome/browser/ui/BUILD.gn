@@ -1366,8 +1366,6 @@ static_library("ui") {
       "tabs/tab_strip_user_gesture_details.h",
       "tabs/tab_style.cc",
       "tabs/tab_style.h",
-      "tabs/tab_switch_event_latency_recorder.cc",
-      "tabs/tab_switch_event_latency_recorder.h",
       "tabs/tab_types.h",
       "tabs/tab_utils.cc",
       "tabs/tab_utils.h",
