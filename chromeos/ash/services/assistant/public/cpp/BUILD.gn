@@ -50,5 +50,6 @@ component("cpp") {
   deps = [
     "//chromeos/ash/components/assistant:buildflags",
     "//components/prefs",
+    "//sandbox/policy",
   ]
 }
