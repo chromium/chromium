@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -78,6 +79,10 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
   ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
+
+  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
+    hats_bluetooth_revamp_trigger->TryToShowSurvey();
+  }
 }
 
 void BluetoothDeviceStatusUiHandler::ShowToast(ash::ToastData toast_data) {
