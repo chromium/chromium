@@ -5801,7 +5801,7 @@
           ]
         },
       },
-      # TODO(crbug.com/1381588): replace `updater_gtests_mac_user` with
+      # TODO(crbug.com/1405483): replace `updater_gtests_mac_user` with
       # `updater_gtests_mac` once crbug.com/1394839 is resolved.
       'mac13-arm64-updater-tester-dbg': {
         'test_suites': {
@@ -5816,7 +5816,7 @@
           ]
         },
       },
-      # TODO(crbug.com/1381588): replace `updater_gtests_mac_user` with
+      # TODO(crbug.com/1405483): replace `updater_gtests_mac_user` with
       # `updater_gtests_mac` once crbug.com/1394839 is resolved.
       'mac13-x64-updater-tester-rel': {
         'test_suites': {
@@ -5930,6 +5930,9 @@
             }
           ]
         },
+      },
+      'win32-updater-builder-rel': {
+        'additional_compile_targets': ['updater_tests_all'],
       },
     }
   },

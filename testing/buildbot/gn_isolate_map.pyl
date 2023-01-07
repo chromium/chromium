@@ -1913,6 +1913,10 @@
       "--ui-test-action-timeout=40000",
     ],
   },
+  "updater_tests_all": {
+    "label": "//chrome/updater:all",
+    "type": "additional_compile_target",
+  },
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
     "type": "generated_script",

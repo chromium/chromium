@@ -757,5 +757,10 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
       }
     ]
+  },
+  "win32-updater-builder-rel": {
+    "additional_compile_targets": [
+      "updater_tests_all"
+    ]
   }
 }
