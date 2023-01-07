@@ -1078,7 +1078,8 @@ TEST_F(DocumentProviderTest, Scoring) {
               [{"emailAddress": "GoodemaiL@gmail.com"}]
             }}},
           {"title": "Document 2", "score": 1150, "url": "url"},
-          {"title": "Document 3", "score": 1150, "url": "url"}
+          {"title": "Document 3", "score": 1150, "url": "url",
+            "metadata": {"owner": {"emailAddresses": [{}] }} }
         ]})",
       "input", {1150, 950, 949});
 
@@ -1394,15 +1395,14 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
 
     ASSERT_EQ(matches.size(), expected_scores.size());
-    for (size_t i = 0; i < matches.size(); i++) {
+    for (size_t i = 0; i < matches.size(); i++)
       EXPECT_EQ(matches[i].relevance, expected_scores[i]) << "Match " << i;
-    }
   };
 
   {
     SCOPED_TRACE(
         "Unowned and non-title matching docs are limited. Title matching docs "
-        "are not limited");
+        "are not limited.");
     test(true,
          R"({"results": [
           {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
@@ -1450,5 +1450,28 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
           {"title": "good title1 title2", "score": 994,  "url": "url"}
         ]})",
          "goo title1", {1000, 999, 998, 997, 996, 995, 994});
+  }
+
+  {
+    SCOPED_TRACE("Responses with missing owner don't crash and are limited.");
+    test(true,
+         R"({"results": [
+            {"title": "title", "score": 1000,  "url": "url", "metadata":
+              { "owner": { "emailAddresses": [{}] } }
+            },
+            {"title": "title", "score": 999,  "url": "url", "metadata":
+              { "owner": { "emailAddresses": [{}] } }
+            },
+            {"title": "title", "score": 998,  "url": "url", "metadata":
+              { "owner": { "emailAddresses": [] } }
+            },
+            {"title": "title", "score": 997,  "url": "url", "metadata":
+              { "owner": {} }
+            },
+            {"title": "title", "score": 996,  "url": "url", "metadata": {}},
+            {"title": "title", "score": 995,  "url": "url"},
+            {}
+          ]})",
+         "input", {1000, 0, 0, 0, 0, 0});
   }
 }
