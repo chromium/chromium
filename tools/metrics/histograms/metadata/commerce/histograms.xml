@@ -222,7 +222,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
-    expires_after="2023-02-01">
+    expires_after="2023-06-01">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -264,6 +264,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage"
     enum="Boolean" expires_after="2023-01-01">
+  <obsolete>
+    Deprecated 12/2022. Replaced by Commerce.PDPStateOnNavigation.
+  </obsolete>
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
