@@ -158,7 +158,6 @@ def main():
       project_static_dir = _FirebaseInitProjectDir(project_dir)
       _CopyStaticFiles(project_static_dir,
                        include_debug_wasm=options.deploy_mode == _DEV)
-      _FirebaseLogin()
       _FillInAndCopyTemplates(project_static_dir)
       _FirebaseDeploy(project_dir, deploy_mode=options.deploy_mode)
   else:
