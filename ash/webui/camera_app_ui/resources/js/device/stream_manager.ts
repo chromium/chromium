@@ -8,7 +8,7 @@ import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {speak} from '../spoken_msg.js';
-import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
+import {ErrorLevel, ErrorType, Facing} from '../type.js';
 import {sleep} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -82,18 +82,7 @@ export class StreamManager {
    */
   private waitVirtualRemoved: WaitableEvent|null = null;
 
-  /**
-   * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
-   */
-  private readonly videoConfigFilter: (config: VideoConfig) => boolean;
-
   private constructor() {
-    this.videoConfigFilter = (() => {
-      const board = loadTimeData.getBoard();
-      return board === 'grunt' ? ({height}: VideoConfig) => height < 720 :
-                                 () => true;
-    })();
-
     navigator.mediaDevices.addEventListener(
         'devicechange', () => this.deviceUpdate());
   }
@@ -272,9 +261,7 @@ export class StreamManager {
     return Promise.all(deviceInfos.map(
         async (d) => ({
           v1Info: d,
-          v3Info: isV3Supported ?
-              (await Camera3DeviceInfo.create(d, this.videoConfigFilter)) :
-              null,
+          v3Info: isV3Supported ? (await Camera3DeviceInfo.create(d)) : null,
         })));
   }
 

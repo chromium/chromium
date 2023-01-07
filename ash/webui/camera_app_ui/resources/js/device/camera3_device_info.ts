@@ -117,14 +117,9 @@ export class Camera3DeviceInfo {
    *     operator.
    *
    * @param deviceInfo Given device info.
-   * @param videoConfigFilter Filters the available video capability exposed by
-   *     device.
    * @throws Thrown when the device operation is not supported.
    */
-  static async create(
-      deviceInfo: MediaDeviceInfo,
-      videoConfigFilter: (videoConfig: VideoConfig) => boolean):
-      Promise<Camera3DeviceInfo> {
+  static async create(deviceInfo: MediaDeviceInfo): Promise<Camera3DeviceInfo> {
     const deviceId = deviceInfo.deviceId;
 
     const deviceOperator = DeviceOperator.getInstance();
@@ -138,12 +133,11 @@ export class Camera3DeviceInfo {
         (await deviceOperator.getZoomDefault(deviceId)) !== undefined;
     const photoResolution = await deviceOperator.getPhotoResolutions(deviceId);
     const videoConfigs = await deviceOperator.getVideoConfigs(deviceId);
-    const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
     const supportedFpsRanges =
         await deviceOperator.getSupportedFpsRanges(deviceId);
 
     return new Camera3DeviceInfo(
-        deviceInfo, facing, photoResolution, filteredVideoConfigs,
-        supportedFpsRanges, supportPTZ);
+        deviceInfo, facing, photoResolution, videoConfigs, supportedFpsRanges,
+        supportPTZ);
   }
 }
