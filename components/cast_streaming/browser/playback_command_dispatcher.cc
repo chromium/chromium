@@ -49,6 +49,15 @@ void PlaybackCommandDispatcher::RegisterCommandSource(
   muxer_->RegisterController(std::move(controls));
 }
 
+void PlaybackCommandDispatcher::Flush(
+    media::mojom::Renderer::FlushCallback callback) {
+  muxer_->Flush(std::move(callback));
+}
+
+void PlaybackCommandDispatcher::TryStartPlayback(base::TimeDelta timestamp) {
+  muxer_->TryStartPlayback(std::move(timestamp));
+}
+
 void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
     openscreen::cast::RpcMessenger* messenger) {
   DCHECK(messenger);
@@ -116,6 +125,14 @@ void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(
     return;
   }
 
+  // Don't log RPC_RC_ONTIMEUPDATE or RPC_RC_ONSTATISTICSUPDATE calls, as they
+  // will generate too much spam to be useful.
+  DVLOG_IF(
+      1, message->proc() != openscreen::cast::RpcMessage::RPC_RC_ONTIMEUPDATE &&
+             message->proc() !=
+                 openscreen::cast::RpcMessage::RPC_RC_ONSTATISTICSUPDATE)
+      << "SendRemotingRpcMessageToRemote() type=" << message->proc();
+
   message->set_handle(handle);
   messenger_->SendMessageToRemote(*message);
 }
@@ -124,6 +141,8 @@ void PlaybackCommandDispatcher::ProcessRemotingRpcMessageFromRemote(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  DVLOG(1) << "ProcessRemotingRpcMessageFromRemote() type=" << message->proc();
 
   const bool did_dispatch_as_initialization_call =
       remoting::DispatchInitializationRpcCall(message.get(), this);

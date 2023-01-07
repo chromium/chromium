@@ -5,8 +5,16 @@
 #include "components/cast_streaming/browser/renderer_control_multiplexer.h"
 
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 
 namespace cast_streaming {
+namespace {
+
+// The delay that should be used between receiving a call to TryStartPlayback
+// and attempting to start the Renderer with a StartPlayingFrom() call.
+constexpr base::TimeDelta kStartPlaybackDelay = base::Milliseconds(500);
+
+}  // namespace
 
 RendererControlMultiplexer::RendererControlMultiplexer(
     mojo::Remote<media::mojom::Renderer> renderer_remote,
@@ -32,9 +40,32 @@ void RendererControlMultiplexer::RegisterController(
   receiver_list_.push_back(std::move(bound_controls));
 }
 
-void RendererControlMultiplexer::StartPlayingFrom(::base::TimeDelta time) {
+void RendererControlMultiplexer::TryStartPlayback(base::TimeDelta time) {
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&RendererControlMultiplexer::TryStartPlaybackAfterDelay,
+                     weak_factory_.GetWeakPtr(), std::move(time)),
+      kStartPlaybackDelay);
+}
+
+void RendererControlMultiplexer::TryStartPlaybackAfterDelay(
+    base::TimeDelta time) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  renderer_remote_->StartPlayingFrom(time);
+  if (is_playback_ongoing_) {
+    return;
+  }
+
+  StartPlayingFrom(time + kStartPlaybackDelay);
+  SetPlaybackRate(1.0);
+}
+
+void RendererControlMultiplexer::StartPlayingFrom(base::TimeDelta time) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!is_playback_ongoing_) {
+    DVLOG(1) << "Will start playing from time: " << time;
+    renderer_remote_->StartPlayingFrom(time);
+    is_playback_ongoing_ = true;
+  }
 }
 
 void RendererControlMultiplexer::SetPlaybackRate(double playback_rate) {
@@ -69,11 +100,19 @@ void RendererControlMultiplexer::Initialize(
 
 void RendererControlMultiplexer::Flush(FlushCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  renderer_remote_->Flush(std::move(callback));
+  renderer_remote_->Flush(
+      base::BindOnce(&RendererControlMultiplexer::OnFlushComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void RendererControlMultiplexer::OnMojoDisconnect() {
   receiver_list_.clear();
+}
+
+void RendererControlMultiplexer::OnFlushComplete(FlushCallback callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  is_playback_ongoing_ = false;
+  std::move(callback).Run();
 }
 
 }  // namespace cast_streaming

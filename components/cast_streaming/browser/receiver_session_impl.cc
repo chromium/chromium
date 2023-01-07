@@ -137,6 +137,7 @@ void ReceiverSessionImpl::OnSessionInitialization(
   demuxer_connector_->OnStreamsInitialized(std::move(audio_info),
                                            std::move(video_info));
 
+  PreloadBuffersAndStartPlayback();
   InformClientOfConfigChange();
 }
 
@@ -202,6 +203,7 @@ void ReceiverSessionImpl::OnSessionReinitialization(
     }
   }
 
+  PreloadBuffersAndStartPlayback();
   InformClientOfConfigChange();
 }
 
@@ -228,6 +230,22 @@ void ReceiverSessionImpl::OnSessionEnded() {
   // Cast Streaming Session ending was initiated by the receiver component.
   audio_demuxer_stream_data_provider_.reset();
   video_demuxer_stream_data_provider_.reset();
+}
+
+void ReceiverSessionImpl::PreloadBuffersAndStartPlayback() {
+  DCHECK(audio_demuxer_stream_data_provider_ ||
+         video_demuxer_stream_data_provider_);
+  DVLOG(1) << __func__;
+
+  if (audio_demuxer_stream_data_provider_) {
+    audio_demuxer_stream_data_provider_->PreloadBuffer(
+        cast_streaming_session_.GetAudioBufferPreloader());
+  }
+
+  if (video_demuxer_stream_data_provider_) {
+    video_demuxer_stream_data_provider_->PreloadBuffer(
+        cast_streaming_session_.GetVideoBufferPreloader());
+  }
 }
 
 void ReceiverSessionImpl::OnMojoDisconnect() {
@@ -263,20 +281,9 @@ bool ReceiverSessionImpl::RendererControllerImpl::IsValid() const {
   return renderer_controls_.is_bound() && renderer_controls_.is_connected();
 }
 
-void ReceiverSessionImpl::RendererControllerImpl::StartPlayingFrom(
-    base::TimeDelta time) {
-  DCHECK(IsValid());
-  renderer_controls_->StartPlayingFrom(time);
-}
-
-void ReceiverSessionImpl::RendererControllerImpl::SetPlaybackRate(
-    double playback_rate) {
-  DCHECK(IsValid());
-  renderer_controls_->SetPlaybackRate(playback_rate);
-}
-
 void ReceiverSessionImpl::RendererControllerImpl::SetVolume(float volume) {
   DCHECK(IsValid());
+
   renderer_controls_->SetVolume(volume);
 }
 

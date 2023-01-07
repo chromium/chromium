@@ -96,14 +96,56 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 
 void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
     base::OnceClosure no_frames_available_cb) {
+  if (preloaded_audio_buffer_) {
+    DCHECK(preloaded_audio_buffer_.value());
+    client_->OnAudioBufferReceived(std::move(preloaded_audio_buffer_.value()));
+    preloaded_audio_buffer_ = absl::nullopt;
+    return;
+  }
+
   DCHECK(audio_consumer_);
   audio_consumer_->ReadFrame(std::move(no_frames_available_cb));
 }
 
 void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
     base::OnceClosure no_frames_available_cb) {
+  if (preloaded_video_buffer_) {
+    DCHECK(preloaded_video_buffer_.value());
+    client_->OnVideoBufferReceived(std::move(preloaded_video_buffer_.value()));
+    preloaded_video_buffer_ = absl::nullopt;
+    return;
+  }
+
   DCHECK(video_consumer_);
   video_consumer_->ReadFrame(std::move(no_frames_available_cb));
+}
+
+void CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer(
+    media::mojom::DecoderBufferPtr buffer) {
+  DCHECK(!preloaded_audio_buffer_);
+  DCHECK(buffer);
+
+  DVLOG(1) << "Audio buffer preloaded!";
+
+  preloaded_audio_buffer_ = std::move(buffer);
+  if (playback_command_dispatcher_ && !ongoing_session_has_video()) {
+    playback_command_dispatcher_->TryStartPlayback(
+        (*preloaded_audio_buffer_)->timestamp);
+  }
+}
+
+void CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer(
+    media::mojom::DecoderBufferPtr buffer) {
+  DCHECK(!preloaded_video_buffer_);
+  DCHECK(buffer);
+
+  DVLOG(1) << "Video buffer preloaded!";
+
+  preloaded_video_buffer_ = std::move(buffer);
+  if (playback_command_dispatcher_ && ongoing_session_has_video()) {
+    playback_command_dispatcher_->TryStartPlayback(
+        (*preloaded_video_buffer_)->timestamp);
+  }
 }
 
 CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() = default;
@@ -180,6 +222,16 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
   DVLOG(1) << __func__;
   DCHECK_EQ(initialization_info.session, receiver_session_.get());
 
+  // If a Flush() call is ongoing, its unsafe to begin streaming data, so
+  // instead stall this call until the Flush() call has completed.
+  DCHECK(!start_session_cb_);
+  if (is_flush_pending_) {
+    start_session_cb_ = base::BindOnce(
+        &CastStreamingSession::ReceiverSessionClient::StartStreamingSession,
+        weak_factory_.GetWeakPtr(), std::move(initialization_info));
+    return;
+  }
+
   // This is necessary in case the offer message had no audio and no video
   // stream.
   if (!initialization_info.audio_stream_info &&
@@ -193,13 +245,11 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
   bool is_new_offer = is_initialized_;
   if (is_new_offer) {
     // This is a second offer message, reinitialize the streams.
-    const bool existing_session_has_audio = !!audio_consumer_;
-    const bool existing_session_has_video = !!video_consumer_;
     const bool new_offer_has_audio = !!initialization_info.audio_stream_info;
     const bool new_offer_has_video = !!initialization_info.video_stream_info;
 
-    if (new_offer_has_audio != existing_session_has_audio ||
-        new_offer_has_video != existing_session_has_video) {
+    if (new_offer_has_audio != ongoing_session_has_audio() ||
+        new_offer_has_video != ongoing_session_has_video()) {
       // This call to StartStreamingSession() has support for audio and/or video
       // streaming which does not match the ones provided during a prior call to
       // this method. Return early here.
@@ -289,8 +339,27 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
       client_->OnSessionEnded();
       break;
     case ReceiversDestroyingReason::kRenegotiated:
+      if (playback_command_dispatcher_) {
+        DCHECK(!is_flush_pending_);
+
+        DVLOG(1) << "Calling Flush()";
+        is_flush_pending_ = true;
+        playback_command_dispatcher_->Flush(base::BindOnce(
+            &CastStreamingSession::ReceiverSessionClient::OnFlushComplete,
+            weak_factory_.GetWeakPtr()));
+      }
       client_->OnSessionReinitializationPending();
       break;
+  }
+}
+
+void CastStreamingSession::ReceiverSessionClient::OnFlushComplete() {
+  DCHECK(is_flush_pending_);
+
+  DVLOG(1) << "Flush() Complete!";
+  is_flush_pending_ = false;
+  if (start_session_cb_) {
+    std::move(start_session_cb_).Run();
   }
 }
 
@@ -359,6 +428,22 @@ CastStreamingSession::GetVideoBufferRequester() {
   DCHECK(receiver_session_);
   return base::BindRepeating(
       &CastStreamingSession::ReceiverSessionClient::GetVideoBuffer,
+      receiver_session_->GetWeakPtr());
+}
+
+CastStreamingSession::PreloadBufferCB
+CastStreamingSession::GetAudioBufferPreloader() {
+  DCHECK(receiver_session_);
+  return base::BindRepeating(
+      &CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer,
+      receiver_session_->GetWeakPtr());
+}
+
+CastStreamingSession::PreloadBufferCB
+CastStreamingSession::GetVideoBufferPreloader() {
+  DCHECK(receiver_session_);
+  return base::BindRepeating(
+      &CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer,
       receiver_session_->GetWeakPtr());
 }
 

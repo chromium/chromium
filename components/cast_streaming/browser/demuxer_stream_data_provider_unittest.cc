@@ -76,6 +76,7 @@ class DemuxerStreamDataProviderTest : public testing::Test {
    public:
     MOCK_METHOD1(RequestBuffer, void(base::OnceClosure));
     MOCK_METHOD0(OnMojoDisconnect, void());
+    MOCK_METHOD1(OnPreloadComplete, void(media::mojom::DecoderBufferPtr));
 
     MOCK_METHOD0(OnGetBufferDoneCalled, void());
     void OnGetBufferDone(absl::optional<media::AudioDecoderConfig> config,
@@ -220,6 +221,16 @@ TEST_F(DemuxerStreamDataProviderTest, EnableBitstreamConverter) {
           [](base::OnceCallback<void(bool)> cb) { std::move(cb).Run(true); });
   remote_->EnableBitstreamConverter(base::OnceCallback<void(bool)>());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(DemuxerStreamDataProviderTest, BufferPreloading) {
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
+  data_provider_->PreloadBuffer(base::BindOnce(&Callbacks::OnPreloadComplete,
+                                               base::Unretained(&callbacks_)));
+
+  EXPECT_CALL(callbacks_, OnPreloadComplete(testing::_));
+  data_provider_->ProvideBuffer(
+      media::mojom::DecoderBuffer::From(*first_buffer_));
 }
 
 }  // namespace cast_streaming

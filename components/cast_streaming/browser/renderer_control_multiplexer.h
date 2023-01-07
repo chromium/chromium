@@ -30,6 +30,9 @@ class RendererControlMultiplexer : public media::mojom::Renderer {
   void RegisterController(
       mojo::PendingReceiver<media::mojom::Renderer> controls);
 
+  // Starts playback after a delay, if it has not already started.
+  void TryStartPlayback(base::TimeDelta time_delta);
+
   // media::mojo::Renderer overrides.
   //
   // These calls only function to forward calls to |renderer_remote_|. Note that
@@ -51,6 +54,14 @@ class RendererControlMultiplexer : public media::mojom::Renderer {
 
  private:
   void OnMojoDisconnect();
+
+  void OnFlushComplete(FlushCallback callback);
+
+  // Called by TryStartPlayback after a delay to begin playback, if it has
+  // not yet started.
+  void TryStartPlaybackAfterDelay(base::TimeDelta time_delta);
+
+  bool is_playback_ongoing_ = false;
 
   mojo::Remote<media::mojom::Renderer> renderer_remote_;
   std::vector<std::unique_ptr<mojo::Receiver<media::mojom::Renderer>>>

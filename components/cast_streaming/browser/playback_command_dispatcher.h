@@ -56,6 +56,15 @@ class PlaybackCommandDispatcher
   void RegisterCommandSource(
       mojo::PendingReceiver<media::mojom::Renderer> controls);
 
+  // Call Flush() on the Renderer associated with this streaming session.
+  void Flush(media::mojom::Renderer::FlushCallback callback);
+
+  // Begins playback of the streaming session via calls to the Renderer if it
+  // has not yet begun. This is required because the remote device will
+  // sometimes, but not always, call StartPlayingFrom() on a session that it
+  // wants to be playing.
+  void TryStartPlayback(base::TimeDelta timestamp);
+
   // remoting::RemotingSessionClient overrides.
   void OnRemotingSessionNegotiated(
       openscreen::cast::RpcMessenger* messenger) override;
