@@ -17,6 +17,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -201,20 +203,34 @@ class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
   ~TextAcceleratorPart();
 };
 
-// Contains info related to a non-configurable accelerator. The |message_id| and
-// list of |replacements| are used by AcceleratorConfigurationProvider to
-// construct arbitrary text with styled keys and modifiers interspersed.
+// Contains info related to a non-configurable accelerator. A non-configurable
+// accelerator can contain either a standard or text-based accelerator. The
+// message_id and list of replacements will be provided when dealing
+// with text-based accelerators; otherwise, accelerators will be provided
+// and message_id/replacements should not have any value set.
+// AcceleratorConfigurationProvider uses this struct to create a list of
+// AcceleratorInfo struct's for each non-configurable action.
 struct ASH_EXPORT NonConfigurableAcceleratorDetails {
   NonConfigurableAcceleratorDetails(
       int message_id,
       std::vector<TextAcceleratorPart> replacements);
+  explicit NonConfigurableAcceleratorDetails(
+      std::vector<ui::Accelerator> accels);
   NonConfigurableAcceleratorDetails(const NonConfigurableAcceleratorDetails&);
   NonConfigurableAcceleratorDetails& operator=(
       const NonConfigurableAcceleratorDetails&);
   ~NonConfigurableAcceleratorDetails();
 
-  int message_id;
-  std::vector<TextAcceleratorPart> replacements;
+ public:
+  bool IsStandardAccelerator() const { return accelerators.has_value(); }
+
+  // These members are used for the Ambient action ids contained in
+  // the NonConfigurableActions enum.
+  absl::optional<int> message_id;
+  absl::optional<std::vector<TextAcceleratorPart>> replacements;
+  // This member is used for the Browser action ids contained in
+  // the NonConfigurableActions enum.
+  absl::optional<std::vector<ui::Accelerator>> accelerators;
 };
 
 using NonConfigurableActionsMap =
@@ -336,6 +352,12 @@ ASH_EXPORT constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorCategory::kTabsAndWindows,
      mojom::AcceleratorSubcategory::kGeneral,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
+     mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserNewTab,
+     IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB,
+     mojom::AcceleratorCategory::kTabsAndWindows,
+     mojom::AcceleratorSubcategory::kGeneral,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
 
     // Page and Web Browser.

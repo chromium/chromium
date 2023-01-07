@@ -85,6 +85,10 @@ class AcceleratorConfigurationProvider
 
   void InitializeNonConfigurableAccelerators(NonConfigurableActionsMap);
 
+  const NonConfigurableActionsMap& GetNonConfigurableAcceleratorsForTesting() {
+    return non_configurable_actions_mapping_;
+  }
+
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
       const NonConfigurableAcceleratorDetails& details);
 

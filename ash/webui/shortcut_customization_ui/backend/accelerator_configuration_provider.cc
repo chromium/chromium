@@ -15,6 +15,7 @@
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_split.h"
@@ -296,6 +297,21 @@ std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfoVariants(
   return alias_infos;
 }
 
+std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
+    std::vector<ui::Accelerator> accelerators) {
+  std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
+  for (const auto& accelerator : accelerators) {
+    // Get the alias acceleratorInfos by doing F-keys remapping and
+    // six-pack-keys remapping if applicable.
+    std::vector<mojom::AcceleratorInfoPtr> infos =
+        CreateAcceleratorInfoVariants(accelerator);
+    for (auto& info : infos) {
+      infos_mojom.push_back(std::move(info));
+    }
+  }
+  return infos_mojom;
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -419,21 +435,24 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 mojom::TextAcceleratorPropertiesPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
     const NonConfigurableAcceleratorDetails& details) {
+  DCHECK(details.replacements.has_value());
+  DCHECK(details.message_id.has_value());
   // Contains the start points of the replaced strings.
   std::vector<size_t> offsets;
   const std::vector<std::u16string> empty_string_replacements(
-      details.replacements.size());
+      details.replacements.value().size());
   // Pass an array of empty strings to get the offsets of the replacements. The
   // return string has the placeholders removed.
   const auto replaced_string = l10n_util::GetStringFUTF16(
-      details.message_id, empty_string_replacements, &offsets);
+      details.message_id.value(), empty_string_replacements, &offsets);
 
   // Sort the offsets and split the string on the offsets.
   sort(offsets.begin(), offsets.end());
   const auto plain_text_parts = SplitStringOnOffsets(replaced_string, offsets);
 
   auto text_accelerator_parts = GenerateTextAcceleratorParts(
-      plain_text_parts, details.replacements, offsets, replaced_string.size());
+      plain_text_parts, details.replacements.value(), offsets,
+      replaced_string.size());
   return mojom::TextAcceleratorProperties::New(
       std::move(text_accelerator_parts));
 }
@@ -459,35 +478,37 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
     base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
         accelerators_mojom;
     for (const auto& [action_id, accelerators] : id_to_accelerators) {
-      std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-      for (const auto& accelerator : accelerators) {
-        // Get the alias acceleratorInfos by doing F-keys remapping and
-        // six-pack-keys remapping if applicable.
-        std::vector<mojom::AcceleratorInfoPtr> infos =
-            CreateAcceleratorInfoVariants(accelerator);
-        for (auto& info : infos) {
-          infos_mojom.push_back(std::move(info));
-        }
-      }
-      accelerators_mojom.emplace(action_id, std::move(infos_mojom));
+      accelerators_mojom.emplace(action_id,
+                                 CreateAcceleratorInfos(accelerators));
     }
     accelerator_config.emplace(source, std::move(accelerators_mojom));
   }
 
   // Add non-configuarable accelerators.
-  for (const auto& [ambient_action_id, accelerator_text_details] :
+  ActionIdToAcceleratorsInfoMap non_configurable_accelerators;
+  for (const auto& [ambient_action_id, accelerators_details] :
        non_configurable_actions_mapping_) {
-    ActionIdToAcceleratorsInfoMap non_configurable_accelerators;
-    // For text based layout accelerators, we always expect this to be a vector
-    // with a single element.
-    std::vector<mojom::AcceleratorInfoPtr> text_accelerators_info;
-    text_accelerators_info.push_back(
-        CreateTextAcceleratorInfo(accelerator_text_details));
-    non_configurable_accelerators.emplace(ambient_action_id,
-                                          std::move(text_accelerators_info));
-    accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
-                               std::move(non_configurable_accelerators));
+    if (accelerators_details.IsStandardAccelerator()) {
+      // These properties should only be set for text based layout accelerators
+      DCHECK(!accelerators_details.replacements.has_value());
+      DCHECK(!accelerators_details.message_id.has_value());
+      non_configurable_accelerators.emplace(
+          ambient_action_id,
+          CreateAcceleratorInfos(accelerators_details.accelerators.value()));
+    } else {
+      // This property should only be set for standard accelerators
+      DCHECK(!accelerators_details.accelerators.has_value());
+      // For text-based layout accelerators, we always expect this to be a
+      // vector with a single element.
+      std::vector<mojom::AcceleratorInfoPtr> text_accelerators_info;
+      text_accelerators_info.push_back(
+          CreateTextAcceleratorInfo(accelerators_details));
+      non_configurable_accelerators.emplace(ambient_action_id,
+                                            std::move(text_accelerators_info));
+    }
   }
+  accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
+                             std::move(non_configurable_accelerators));
   return accelerator_config;
 }
 

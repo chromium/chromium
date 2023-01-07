@@ -82,11 +82,8 @@ class FakeAcceleratorsUpdatedObserver
   int num_times_notified_ = 0;
 };
 
-bool CompareAccelerators(const ash::AcceleratorData& expected_data,
-                         const mojom::AcceleratorInfoPtr& actual_info) {
-  ui::Accelerator expected_accelerator(expected_data.keycode,
-                                       expected_data.modifiers);
-
+bool AreAcceleratorsEqual(const ui::Accelerator& expected_accelerator,
+                          const mojom::AcceleratorInfoPtr& actual_info) {
   const bool accelerator_equals =
       expected_accelerator ==
       actual_info->layout_properties->get_standard_accelerator()->accelerator;
@@ -94,6 +91,18 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
       shortcut_ui::GetKeyDisplay(expected_accelerator.key_code()) ==
       actual_info->layout_properties->get_standard_accelerator()->key_display;
   return accelerator_equals && key_display_equals;
+}
+
+bool CompareAccelerators(const ash::AcceleratorData& expected_data,
+                         const mojom::AcceleratorInfoPtr& actual_info) {
+  ui::Accelerator expected_accelerator(expected_data.keycode,
+                                       expected_data.modifiers);
+  return AreAcceleratorsEqual(expected_accelerator, actual_info);
+}
+
+bool CompareAccelerators(const ui::Accelerator& expected_accelerator,
+                         const mojom::AcceleratorInfoPtr& actual_info) {
+  return AreAcceleratorsEqual(expected_accelerator, actual_info);
 }
 
 void CompareInputDevices(const ui::InputDevice& expected,
@@ -151,10 +160,22 @@ void ValidateAcceleratorLayouts(
   }
 }
 
-void ValidateTextAccelerator(const TextAcceleratorPart& lhs,
-                             const mojom::TextAcceleratorPartPtr& rhs) {
+void ValidateTextAccelerators(const TextAcceleratorPart& lhs,
+                              const mojom::TextAcceleratorPartPtr& rhs) {
   EXPECT_EQ(lhs.text, rhs->text);
   EXPECT_EQ(lhs.type, rhs->type);
+}
+
+std::vector<mojom::TextAcceleratorPartPtr> RemovePlainTextParts(
+    const std::vector<mojom::TextAcceleratorPartPtr>& parts) {
+  std::vector<mojom::TextAcceleratorPartPtr> res;
+  for (const auto& part : parts) {
+    if (part->type == mojom::TextAcceleratorPartType::kPlainText) {
+      continue;
+    }
+    res.push_back(mojo::Clone(part));
+  }
+  return res;
 }
 
 }  // namespace
@@ -201,6 +222,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    non_configurable_actions_map_ =
+        provider_->GetNonConfigurableAcceleratorsForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -222,7 +245,21 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  const std::vector<ui::Accelerator>& GetAcceleratorsForAction(int action_id) {
+    return non_configurable_actions_map_
+        .find(static_cast<ash::NonConfigurableActions>(action_id))
+        ->second.accelerators.value();
+  }
+
+  const std::vector<TextAcceleratorPart>& GetReplacementsForAction(
+      int action_id) {
+    return non_configurable_actions_map_
+        .find(static_cast<ash::NonConfigurableActions>(action_id))
+        ->second.replacements.value();
+  }
+
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
+  NonConfigurableActionsMap non_configurable_actions_map_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   base::raw_ptr<TestInputMethodManager> input_method_manager_;
@@ -562,6 +599,43 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"space", GetKeyDisplay(ui::VKEY_SPACE));
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  base::RunLoop().RunUntilIdle();
+  // Reinitialize the non-configurable accelerators to trigger the observer.
+  provider_->InitializeNonConfigurableAccelerators(
+      non_configurable_actions_map_);
+  base::RunLoop().RunUntilIdle();
+  auto config = observer.config();
+  for (const auto& [id, accel_infos] :
+       config[mojom::AcceleratorSource::kAmbient]) {
+    for (const auto& info : accel_infos) {
+      if (info->layout_properties->is_standard_accelerator()) {
+        bool found_match = false;
+        for (const auto& expected_data : GetAcceleratorsForAction(id)) {
+          found_match = CompareAccelerators(expected_data, mojo::Clone(info));
+          if (found_match) {
+            break;
+          }
+        }
+        // Matching Accelerator was found.
+        EXPECT_TRUE(found_match);
+      } else {
+        // We're only concerned with validating the replacements
+        // (keys/modifiers). Validating the plain text parts is handled by the
+        // paramaterized tests below.
+        const auto& text_accel_parts = RemovePlainTextParts(
+            info->layout_properties->get_text_accelerator()->text_accelerator);
+        const auto& replacement_parts = GetReplacementsForAction(id);
+        for (size_t i = 0; i < replacement_parts.size(); i++) {
+          ValidateTextAccelerators(replacement_parts[i], text_accel_parts[i]);
+        }
+      }
+    }
+  }
+}
+
 using FlagsKeyboardCodesVariant =
     std::variant<ui::EventFlags, ui::KeyboardCode>;
 using FlagsKeyboardCodeStringVariant =
@@ -686,7 +760,7 @@ TEST_P(TextAcceleratorParsingTest, TextAcceleratorParsing) {
       {FAKE_RESOURCE_ID, replacements_});
   EXPECT_EQ(expected_parts_.size(), parts->text_accelerator.size());
   for (size_t i = 0; i < expected_parts_.size(); i++) {
-    ValidateTextAccelerator(expected_parts_[i], parts->text_accelerator[i]);
+    ValidateTextAccelerators(expected_parts_[i], parts->text_accelerator[i]);
   }
 }
 

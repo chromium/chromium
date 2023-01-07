@@ -52,11 +52,19 @@ TextAcceleratorPart::~TextAcceleratorPart() = default;
 TextAcceleratorPart& TextAcceleratorPart::operator=(
     const TextAcceleratorPart&) = default;
 
+// Constructor used for text-based layout accelerators.
 NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
     int message_id,
     std::vector<TextAcceleratorPart> replacements) {
   this->message_id = message_id;
   this->replacements = std::move(replacements);
+}
+
+// Constructor used for standard accelerators (i.e, it contains at least one
+// modifier and a set of keys).
+NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
+    std::vector<ui::Accelerator> accels) {
+  accelerators = std::move(accels);
 }
 
 NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
@@ -76,6 +84,9 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
+          {NonConfigurableActions::kBrowserNewTab,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }
