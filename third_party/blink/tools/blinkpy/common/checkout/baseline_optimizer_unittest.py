@@ -359,6 +359,27 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
+    def test_virtual_test_fallback_to_same_baseline_after_optimization_3(self):
+        # Baseline optimization in this case removed the baseline for
+        # virtual/gpu/fast/canvas on Linux. When patching virtual tree,
+        # virtual/gpu/fast/canvas on Win get a baseline of '1', the algorithm
+        # then decides the virtual baseline on both Win and Linux can be
+        # removed, which is not correct.
+        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
+        self._assert_optimization(
+            {
+                'platform/win/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/mac/fast/canvas': '3',
+                'platform/linux/virtual/gpu/fast/canvas': '1'
+            }, {
+                'platform/win/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/mac/fast/canvas': '3',
+                'platform/linux/virtual/gpu/fast/canvas': None
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
     def test_virtual_baseline_not_redundant_with_actual_root(self):
         # baseline optimization supprisingly added one baseline in this case.
         # This is because we are patching the virtual subtree first.
@@ -491,6 +512,26 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/linux': None,
                 'platform/win': None
             })
+
+    def test_all_pass_testharness_at_win_and_mac_not_redundant(self):
+        # Baseline optimization in the case removed the all pass baseline
+        # for virtual/gpu/fast/canvas on Win and Mac, but failed to add a
+        # generic virtual baseline.
+        # TODO(1399685):  all pass baselines are removed incorrectly
+        self._assert_optimization(
+            {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/win/virtual/gpu/fast/canvas':
+                ALL_PASS_TESTHARNESS_RESULT
+            }, {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': None,
+                'virtual/gpu/fast/canvas': None
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_all_pass_testharness_at_virtual_root(self):
         self._assert_optimization(
