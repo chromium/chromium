@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 
 namespace blink {
 
@@ -33,6 +34,16 @@ bool LayoutNGView::IsFragmentationContextRoot() const {
 }
 
 void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
+  relayout_children |=
+      !ShouldUsePrintingLayout() &&
+      (!GetFrameView() || LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
+       LogicalHeight() != ViewLogicalHeightForBoxSizing());
+  if (relayout_children && GetDocument().SvgExtensions()) {
+    GetDocument()
+        .AccessSVGExtensions()
+        .InvalidateSVGRootsWithRelativeLengthDescendents(nullptr);
+  }
+
   NGConstraintSpace constraint_space =
       NGConstraintSpace::CreateFromLayoutObject(*this);
 

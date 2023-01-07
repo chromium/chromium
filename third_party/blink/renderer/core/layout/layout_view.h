@@ -367,6 +367,14 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  int ViewLogicalWidthForBoxSizing() const {
+    NOT_DESTROYED();
+    return ViewLogicalWidth(kIncludeScrollbars);
+  }
+  int ViewLogicalHeightForBoxSizing() const {
+    NOT_DESTROYED();
+    return ViewLogicalHeight(kIncludeScrollbars);
+  }
 
  private:
   bool CanHaveChildren() const override;
@@ -378,15 +386,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 #endif
 
   void UpdateFromStyle() override;
-
-  int ViewLogicalWidthForBoxSizing() const {
-    NOT_DESTROYED();
-    return ViewLogicalWidth(kIncludeScrollbars);
-  }
-  int ViewLogicalHeightForBoxSizing() const {
-    NOT_DESTROYED();
-    return ViewLogicalHeight(kIncludeScrollbars);
-  }
 
   bool UpdateLogicalWidthAndColumnWidth() override;
 

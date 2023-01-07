@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="help" href="https://crbug.com/1403588">
+<link rel="match" href="reference/mask-image-url-svg-ref.html">
+<meta name="fuzzy" content="maxDifference=1-70;totalPixels=0-24">
+<style>
+.t {
+  width: 50vw;
+  height: 10vh;
+  background: blue;
+  margin: 8px;
+}
+.t-1 { -webkit-mask-image: url("support/mask-2.svg#test-1"); }
+.t-2 { -webkit-mask-image: url("support/mask-2.svg#test-2"); }
+.t-3 { -webkit-mask-image: url("support/mask-2.svg#test-3"); }
+.t-4 { -webkit-mask-image: url("support/mask-2.svg#test-4"); }
+.t-5 { -webkit-mask-image: url("support/mask-2.svg#test-5"); }
+</style>
+</head>
+<body>
+<div class="t t-1"></div>
+<div class="t t-2"></div>
+<div class="t t-3"></div>
+<div class="t t-4"></div>
+<div class="t t-5"></div>
+</body>
+</html>
