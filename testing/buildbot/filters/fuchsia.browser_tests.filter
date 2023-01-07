@@ -607,8 +607,5 @@
 -PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
 
-# TODO(crbug.com/1402821): Print is not correctly enabled in browser tests.
--PrintPreviewBrowserTest.PrintCommands
-
 # TODO(crbug.com/1348646): `navigator.platform` returns the empty string.
 -ReduceUserAgentPlatformBrowserTest.NavigatorPlatform

@@ -59,15 +59,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
-#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_CHROMEOS)
-  // This is analogous to ENABLE_BASIC_PRINT_DIALOG but helps to verify that it
-  // is defined as expected.
-  bool is_basic_print_expected = true;
-#else
-  bool is_basic_print_expected = false;
-#endif
-
-  ASSERT_EQ(is_basic_print_expected,
+  ASSERT_EQ(BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG),
             chrome::IsCommandEnabled(browser(), IDC_BASIC_PRINT));
 
   // Create the print preview dialog.
@@ -75,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   ASSERT_FALSE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
-  ASSERT_EQ(is_basic_print_expected,
+  ASSERT_EQ(BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG),
             chrome::IsCommandEnabled(browser(), IDC_BASIC_PRINT));
 
   content::TestNavigationObserver reload_observer(
@@ -85,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
-  ASSERT_EQ(is_basic_print_expected,
+  ASSERT_EQ(BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG),
             chrome::IsCommandEnabled(browser(), IDC_BASIC_PRINT));
 }
 
