@@ -2830,19 +2830,6 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
 <translation id="3591584750136265240">Định cấu hình hành vi xác thực thông tin đăng nhập</translation>
 <translation id="3593905652755912452">Thao tác gửi sự kiện cũ trên các đối tượng kiểm soát biểu mẫu đã tắt sẽ được sử dụng.</translation>
 <translation id="3596112486106491038">Bật quyền truy cập vào dòng lệnh của máy ảo</translation>
-<translation id="3596335476793146071">Danh sách thao tác sẽ diễn ra khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định.
-
-      Nếu bạn không đặt chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" />, chính sách này sẽ không có hiệu lực.
-
-      Khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định, <ph name="PRODUCT_NAME" /> sẽ thực hiện các thao tác được định cấu hình trong chính sách này.
-
-      Nếu bạn để trống hoặc không đặt chính sách này, thì chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> sẽ không có hiệu lực.
-
-      Các thao tác được hỗ trợ là:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": đóng tất cả cửa sổ trình duyệt và PWA của hồ sơ này.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": hiện cửa sổ Bộ chọn hồ sơ.</translation>
 <translation id="3603469950773500315">Bật tùy chọn giảm thiểu kiểm tra <ph name="CORS" /> trong quy trình triển khai <ph name="CORS" /> mới, cho phép Tiện ích duy trì chế độ tương thích và cho phép <ph name="PRODUCT_NAME" /> gửi tiêu đề đã chỉ định mà không cần kiểm tra <ph name="CORS" />.
 
       Nếu bạn đặt danh sách này thành trống, thì <ph name="PRODUCT_NAME" /> sẽ cố chạy Tiện ích theo cách thức tương thích và không làm thay đổi <ph name="API" /> đối với <ph name="PRODUCT_NAME" /> 79 như giải thích tại <ph name="WEB_REQUEST_API_MANUAL" />.

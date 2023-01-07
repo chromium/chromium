@@ -1249,6 +1249,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> மறைக்கப்பட்டன</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ஃபோன் எண்}other{# ஃபோன் எண்கள்}}</translation>
 <translation id="2110941575868943054">புளூடூத் சாதனங்களைத் தேட அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
+<translation id="2111158890826137380">ஏதோ தவறாகிவிட்டது. விளக்கத்தில் #bruschetta உடன் கருத்தைச் சமர்ப்பிக்கவும். பிழைக் குறியீடு: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">வகைகளை அழி</translation>
 <translation id="2111670510994270194">வலதுபக்கத்தில் புதிய தாவல்</translation>
 <translation id="2112554630428445878">வணக்கம், <ph name="USERNAME" /></translation>
@@ -1793,6 +1794,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{இந்தச் சாதனம் 1 ஆண்டிற்குச் சேமிக்கப்படும் என்பதால் அடுத்த முறை நீங்கள் குறியீடு இல்லாமல் இணைக்க முடியும். இது உங்கள் நிர்வாகியால் அமைக்கப்பட்டது.}other{இந்தச் சாதனம் {YEARS} ஆண்டுகளுக்குச் சேமிக்கப்படும் என்பதால் அடுத்த முறை நீங்கள் குறியீடு இல்லாமல் இணைக்க முடியும். இது உங்கள் நிர்வாகியால் அமைக்கப்பட்டது.}}</translation>
 <translation id="257779572837908839">மீட்டிங்குகளுக்கான Chromebox சாதனமாக அமை</translation>
 <translation id="2579309488038515659">ஹாட்ஸ்பாட்டை இயக்கும்</translation>
+<translation id="2579596474754516455">தேவைப்படும்போது PDF படங்களை ஸ்கேன் செய்து ஸ்கிரீன் ரீடருக்கு வார்த்தைகளாக மாற்றும்</translation>
 <translation id="2580889980133367162">பல ஃபைல்களைப் பதிவிறக்க எப்போதும் <ph name="HOST" /> ஐ அனுமதி</translation>
 <translation id="258095186877893873">நீண்ட</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (இயங்குதளம் <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2894,6 +2896,7 @@
 <translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3616741288025931835">உலாவிய தரவை &amp;சுத்தமாக்கு...</translation>
 <translation id="3617891479562106823">பின்னணிகள் கிடைக்கவில்லை. பின்னர் மீண்டும் முயலவும்.</translation>
+<translation id="3618286417582819036">பிழை ஏற்பட்டது</translation>
 <translation id="3619115746895587757">காப்பச்சினோ</translation>
 <translation id="3620136223548713675">புவி இருப்பிடம்</translation>
 <translation id="362023940451053340"><ph name="ACCOUNT" />க்காக உங்கள் Google கணக்கில்</translation>
@@ -3865,7 +3868,6 @@
 <translation id="4513872120116766993">சொல் கணிப்புகள்</translation>
 <translation id="4513946894732546136">கருத்து</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> வழங்குவது</translation>
-<translation id="4514610446763173167">இயக்க அல்லது இடைநிறுத்த, வீடியோவை நிலைமாற்றவும்</translation>
 <translation id="451515744433878153">அகற்று</translation>
 <translation id="4515872537870654449">சிக்கலை சரிசெய்ய Dell நிறுவனத்தைத் தொடர்பு கொள்ளவும். ஃபேன் வேலை செய்யவில்லை எனில் டாக்கின் இயக்கம் நிறுத்தப்படும்.</translation>
 <translation id="4518840066030486079">Shift பட்டன் பயன்முறை ஸ்டைல்</translation>
@@ -6688,6 +6690,7 @@
 <translation id="7149839598364933473">இந்தச் சாதனத்தை <ph name="DEVICE_OS" /> சாதனமாக மாற்றலாம்.</translation>
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
 <translation id="7152478047064750137">இந்த நீட்டிப்பிற்குச் சிறப்பு அனுமதிகள் தேவையில்லை</translation>
+<translation id="7153309176431047193">படங்களை வார்த்தைகளாக மாற்றும்</translation>
 <translation id="7154130902455071009">உங்கள் தொடக்கப் பக்கத்தை இதற்கு மாற்றவும்: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">படத்தை வார்த்தைகளாக மாற்று</translation>
 <translation id="7159953856712257647">இயல்பாக நிறுவப்பட்டது</translation>

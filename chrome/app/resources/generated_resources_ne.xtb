@@ -1234,6 +1234,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> वटा कन्सोल म्यासेज लुकाइएका छन्</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="2110941575868943054">ब्लुटुथ डिभाइसहरू खोज्ने अनुमति दिइएका साइटहरू</translation>
+<translation id="2111158890826137380">माफ गर्नुहोला, केही चिज गडबड भयो। कृपया वर्णनमा #bruschetta समावेश गरी प्रतिक्रिया पठाउनुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो</translation>
 <translation id="211144231511833662">प्रकारहरू हटाउनुहोस्</translation>
 <translation id="2111670510994270194">दायाँपट्टि नयाँ ट्याब</translation>
 <translation id="2112554630428445878">स्वागत छ, <ph name="USERNAME" /></translation>
@@ -1775,6 +1776,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{यो डिभाइससम्बन्धी जानकारी १ वर्षका लागि सेभ गरिने छ र तपाईं अर्को पटक कोड प्रयोग नगरिकन कनेक्ट गर्न सक्नुहुन्छ। तपाईंका एड्मिनले यो सेटिङ तय गर्नुहुन्छ।}other{यो डिभाइससम्बन्धी जानकारी {YEARS} वर्षका लागि सेभ गरिने छ र तपाईं अर्को पटक कोड प्रयोग नगरिकन कनेक्ट गर्न सक्नुहुन्छ। तपाईंका एड्मिनले यो सेटिङ तय गर्नुहुन्छ।}}</translation>
 <translation id="257779572837908839">बैठकहरूका लागि क्रोमबक्सको रूपमा सेटअप गर्नुहोस्‌</translation>
 <translation id="2579309488038515659">हटस्पट अन गर्ने टगल</translation>
+<translation id="2579596474754516455">स्क्रिन रिडरको प्रयोजनका लागि आवश्यक परेका अवस्थामा फोटोलाई रूपान्तरण गरी टेक्स्ट बनाइयोस्</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> लाई धेरै फाइलहरू डाउनलोड गर्ने अनुमति सँधै दिनुहोस्</translation>
 <translation id="258095186877893873">लामो</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (मञ्च <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2877,6 +2879,7 @@
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3616741288025931835">&amp;ब्राउजिङ लगत खालि गर्नुहोस्...</translation>
 <translation id="3617891479562106823">पृष्ठभूमिहरू उपलब्ध छैनन्। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3618286417582819036">माफ गर्नुहोला, कुनै त्रुटि भयो</translation>
 <translation id="3619115746895587757">कापाचिनो</translation>
 <translation id="3620136223548713675">भूस्थान</translation>
 <translation id="362023940451053340">तपाईंको Google खातामा <ph name="ACCOUNT" /> को पासवर्ड</translation>
@@ -3846,7 +3849,6 @@
 <translation id="4513872120116766993">पूर्वानुमानयुक्त लेखन</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> द्वारा संचालित</translation>
-<translation id="4514610446763173167">भिडियो प्ले वा पज गर्न टगल गर्नुहोस्‌</translation>
 <translation id="451515744433878153">हटाउनुहोस्</translation>
 <translation id="4515872537870654449">मर्मतका लागि Dell मा सम्पर्क गर्नुहोस्। पङ्खाले काम गरिरहेको छैन भने डक बन्द हुने छ।</translation>
 <translation id="4518840066030486079">सिफ्ट की मोडको शैली</translation>
@@ -6667,6 +6669,7 @@
 <translation id="7149839598364933473">यो डिभाइसमा <ph name="DEVICE_OS" /> चलाउनुहोस्।</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7152478047064750137">यस विस्तारलाई कुनै विशेष अनुमति चाहिँदैन</translation>
+<translation id="7153309176431047193">फोटोलाई रूपान्तरण गरी टेक्स्ट बनाइयोस्</translation>
 <translation id="7154130902455071009">आफ्नो सुरुवात पृष्ठलाई यसमा परिवर्तन गर्नुहोस्: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">फोटो रूपान्तरण गरेर टेक्स्ट बनाउनुहोस्</translation>
 <translation id="7159953856712257647">स्वतः इन्स्टल गरिएको</translation>

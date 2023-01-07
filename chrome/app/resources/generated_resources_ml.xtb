@@ -1236,6 +1236,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> മറച്ചിരിക്കുന്നു</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="2110941575868943054">Bluetooth ഉപകരണങ്ങൾ തിരയാൻ അനുമതി നൽകിയിരിക്കുന്നു</translation>
+<translation id="2111158890826137380">ക്ഷമിക്കണം, എന്തോ കുഴപ്പമുണ്ട്. വിവരണത്തിൽ #bruschetta എന്ന് നൽകി ഫീഡ്‌ബാക്ക് ഫയൽ ചെയ്യുക. പിശക് കോഡ് <ph name="ERROR" /> ആണ്</translation>
 <translation id="211144231511833662">തരങ്ങൾ മായ്ക്കുക</translation>
 <translation id="2111670510994270194">പുതിയ ടാബ് വലതുവശത്തേക്ക്</translation>
 <translation id="2112554630428445878">സ്വാഗതം, <ph name="USERNAME" /></translation>
@@ -1777,6 +1778,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ഈ ഉപകരണം 1 വർഷം വരെ സംരക്ഷിക്കും, അടുത്ത തവണ നിങ്ങൾക്ക് ഒരു കോഡ് ഇല്ലാതെ തന്നെ കണക്‌റ്റ് ചെയ്യാം. ഇത് നിങ്ങളുടെ അഡ്‌മിൻ സജ്ജീകരിച്ചതാണ്.}other{ഈ ഉപകരണം {YEARS} വർഷം വരെ സംരക്ഷിക്കും, അടുത്ത തവണ നിങ്ങൾക്ക് ഒരു കോഡ് ഇല്ലാതെ തന്നെ കണക്‌റ്റ് ചെയ്യാം. ഇത് നിങ്ങളുടെ അഡ്‌മിൻ സജ്ജീകരിച്ചതാണ്.}}</translation>
 <translation id="257779572837908839">മീറ്റിംഗിനുള്ള Chromebox സജ്ജമാക്കുക</translation>
 <translation id="2579309488038515659">ഹോട്ട്‌സ്‌പോട്ട് പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="2579596474754516455">ആവശ്യമുള്ളപ്പോൾ, സ്‌ക്രീൻ റീഡറിനായി ടെക്‌സ്‌റ്റ് പരിവർത്തനം ചെയ്യാൻ PDF ചിത്രങ്ങൾ സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2580889980133367162">എല്ലായ്‌പ്പോഴും ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ <ph name="HOST" />-നെ അനുവദിക്കുക</translation>
 <translation id="258095186877893873">ദൈർഘ്യമേറിയ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (പ്ലാറ്റ്‌ഫോം <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2878,6 +2880,7 @@
 <translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3616741288025931835">&amp;ബ്രൌസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക...</translation>
 <translation id="3617891479562106823">പശ്ചാത്തലങ്ങൾ ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="3618286417582819036">ക്ഷമിക്കൂ, ഒരു പിശക് സംഭവിച്ചു</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
 <translation id="3620136223548713675">ജിയോലൊക്കേഷൻ</translation>
 <translation id="362023940451053340"><ph name="ACCOUNT" /> എന്നതിനായി നിങ്ങളുടെ Google അക്കൗണ്ടിൽ</translation>
@@ -3847,7 +3850,6 @@
 <translation id="4513872120116766993">എഴുത്ത് പ്രവചിക്കൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> നൽകുന്നത്</translation>
-<translation id="4514610446763173167">പ്ലേ ചെയ്യാനോ താൽക്കാലികമായി നിർത്താനോ വീഡിയോ മാറ്റുക</translation>
 <translation id="451515744433878153">നീക്കംചെയ്യുക</translation>
 <translation id="4515872537870654449">സർവീസ് ചെയ്യാൻ Dell-നെ ബന്ധപ്പെടുക. ഫാൻ പ്രവർത്തിക്കുന്നില്ലെങ്കിൽ ഡോക്ക് ഷട്ട് ഡൗൺ ആകും.</translation>
 <translation id="4518840066030486079">Shift കീ മോഡ് സ്റ്റൈൽ</translation>
@@ -6671,6 +6673,7 @@
 <translation id="7149839598364933473">ഈ ഉപകരണം ഒരു <ph name="DEVICE_OS" /> ഉപകരണമായി പരിവർത്തനം ചെയ്യുക.</translation>
 <translation id="7149893636342594995">അവസാന 24 മണിക്കൂർ</translation>
 <translation id="7152478047064750137">ഈ വിപുലീകരണത്തിന് പ്രത്യേക അനുമതികളൊന്നും ആവശ്യമില്ല</translation>
+<translation id="7153309176431047193">ചിത്രങ്ങൾ ടെക്‌സ്‌റ്റ് ആയി പരിവർത്തനം ചെയ്യുക</translation>
 <translation id="7154130902455071009">നിങ്ങളുടെ ആരംഭ പേജ് ഇതായി മാറ്റുക: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">ചിത്രം ടെക്‌സ്‌റ്റ് ആയി പരിവർത്തനം ചെയ്യുക</translation>
 <translation id="7159953856712257647">ഡിഫോൾട്ട് ആയി ഇൻസ്റ്റാൾ ചെയ്തത്</translation>

@@ -2746,6 +2746,7 @@
 <translation id="3469583217479686109">ఎంపిక టూల్</translation>
 <translation id="3470392222765168737">సైట్‌ను ఫాలో చేయండి</translation>
 <translation id="3471876058939596279">వీడియో కోసం HDMIని, USB రకం-C పోర్ట్‌లను ఒకే సమయంలో ఉపయోగించకూడదు. వేరే వీడియో పోర్ట్‌ను ఉపయోగించండి.</translation>
+<translation id="3472469028191701821">కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="3473241910002674503">టాబ్లెట్ మోడ్‌లో బటన్‌లతో హోమ్, వెనుకకు, స్విచ్ యాప్‌లను నావిగేట్ చేయండి.</translation>
 <translation id="3473479545200714844">స్క్రీన్ మాగ్నిఫైయర్</translation>
 <translation id="3474218480460386727">కొత్త పదాలకు 99 అక్షరాలు లేదా తక్కువ ఉపయోగించండి</translation>
@@ -3133,6 +3134,7 @@
 <translation id="3820749202859700794">SECG దీర్ఘవృత్తాకార వక్రం secp521r1 (NIST P-521గా కూడా పిలువబడుతుంది)</translation>
 <translation id="3821074617718452587">ఫోన్ హబ్ నోటిఫికేషన్‌లు</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ఒక ఎక్స్‌టెన్షన్ ఆమోదించబడింది}other{# ఎక్స్‌టెన్షన్‌లు ఆమోదించబడ్డాయి}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux కోసం కనీసం <ph name="INSTALL_SIZE" />  స్పేస్ కావాలి.</translation>
 <translation id="3824621460022590830">పరికర ఎన్‌రోల్‌మెంట్ టోకెన్ చెల్లదు. మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను దయచేసి సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}other{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}}</translation>
@@ -3865,7 +3867,6 @@
 <translation id="4513872120116766993">సూచనాత్మక వ్రాత</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> అందిస్తోంది</translation>
-<translation id="4514610446763173167">ప్లే లేదా పాజ్ చేయడానికి వీడియోని టోగుల్ చేయండి</translation>
 <translation id="451515744433878153">తీసివేయండి</translation>
 <translation id="4515872537870654449">సేవ పొందడానికి డెల్‌ను సంప్రదించండి. ఫ్యాన్ పని చేయలేదంటే, ఈ డాక్ షట్ డౌన్ అవుతుంది.</translation>
 <translation id="4518840066030486079">Shift కీ మోడ్ స్టయిల్</translation>
@@ -4052,6 +4053,7 @@
 <translation id="4675828034887792601">సైట్‌లను సెర్చ్ చేయడానికి, మీ సెర్చ్ ఇంజిన్‌ను మేనేజ్ చేయడానికి షార్ట్‌కట్‌లను క్రియేట్ చేయండి</translation>
 <translation id="4676595058027112862">ఫోన్ హబ్, మరింత తెలుసుకోండి</translation>
 <translation id="4677772697204437347">GPU మెమరీ</translation>
+<translation id="4678848110205818817">క్రెడిట్/డెబిట్ కార్డ్</translation>
 <translation id="4680105648806843642">ఈ పేజీలో ధ్వని మ్యూట్ చేయబడింది</translation>
 <translation id="4680112532510845139">ఇమేజ్‌ను ఇక్కడ డ్రాప్ చేయండి</translation>
 <translation id="4681453295291708042">సమీప షేరింగ్‌ను డిజేబుల్‌ చేయండి</translation>
