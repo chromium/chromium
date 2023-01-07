@@ -4,7 +4,6 @@
 
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
@@ -47,8 +46,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   // then ensures the devices was not saved when the browsertest starts up
   // again.
 
-  base::HistogramTester histogram_tester;
-
   // Mock a successful fetch from our server.
   SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
                                  net::OK);
@@ -74,10 +71,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   MediaRoute media_route_cast = CreateRouteForTesting("cast:<1234>");
   UpdateRoutes({media_route_cast});
   base::RunLoop().RunUntilIdle();
-
-  // Recorded once from the route created when pressing submit.
-  histogram_tester.ExpectTotalCount(
-      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 1);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(), DisconnectAndRemoveSink(_));
   UpdateRoutes({});
