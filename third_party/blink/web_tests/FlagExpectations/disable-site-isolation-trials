@@ -46,8 +46,8 @@ crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Failure ]
 
 # These started failing when network service was enabled by default.
 crbug.com/933880 external/wpt/service-workers/service-worker/request-end-to-end.https.html [ Failure ]
-crbug.com/933880 http/tests/inspector-protocol/network/raw-headers-for-protected-document.js [ Failure ]
-crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response.js [ Failure ]
+crbug.com/933880 [ Release ] http/tests/inspector-protocol/network/raw-headers-for-protected-document.js [ Failure ]
+crbug.com/933880 [ Release ] http/tests/inspector-protocol/network/security-info-on-response.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
