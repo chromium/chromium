@@ -3015,7 +3015,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3739254215541673094">¿Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3741056951918180319">Puedes hacer clic en la extensión en cualquier momento para usarla en el sitio que desees</translation>
 <translation id="3742235229730461951">Disposición del teclado coreano</translation>
-<translation id="3742666961763734085">No se encontró ninguna unidad organizacional con ese nombre. Vuelve a intentarlo.</translation>
+<translation id="3742666961763734085">No se encontró ninguna unidad organizativa con ese nombre. Vuelve a intentarlo.</translation>
 <translation id="3743842571276656710">Ingresa el PIN para vincular con <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
 <translation id="3747603683749989726">¿Quieres activar la seguridad mejorada?</translation>
@@ -6236,7 +6236,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6762833852331690540">Sí</translation>
 <translation id="676560328519657314">Tus formas de pago de Google Pay</translation>
 <translation id="6767566652486411142">Elegir otro idioma…</translation>
-<translation id="6767639283522617719">No se puede unir al dominio. Asegúrate de que sea correcta la configuración de la unidad organizacional.</translation>
+<translation id="6767639283522617719">No se puede unir al dominio. Asegúrate de que sea correcta la configuración de la unidad organizativa.</translation>
 <translation id="6768034047581882264">No puede mostrar contenido no seguro</translation>
 <translation id="6770042910635026163">Los sitios que visitas y definen tus intereses</translation>
 <translation id="6770602306803890733">Mejora la seguridad para ti y todos los usuarios de la Web</translation>
