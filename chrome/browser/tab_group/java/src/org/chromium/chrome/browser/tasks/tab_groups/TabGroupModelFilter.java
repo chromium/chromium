@@ -666,13 +666,35 @@ public class TabGroupModelFilter extends TabModelFilter {
             TabGroup tabGroup = new TabGroup(getRootId(tab));
             tabGroup.addTab(tab.getId());
             mGroupIdToGroupMap.put(groupId, tabGroup);
-            mGroupIdToGroupIndexMap.put(groupId, mGroupIdToGroupIndexMap.size());
+            if (mIsResetting || getTabModel().indexOf(tab) == getTabModel().getCount() - 1) {
+                // During a reset tabs are iterated over in TabModel order so it is safe to assume
+                // group ordering matches tab ordering. Same is true if the new tab is the last tab
+                // in the model.
+                mGroupIdToGroupIndexMap.put(groupId, mGroupIdToGroupIndexMap.size());
+            } else {
+                // When adding a new tab that isn't at the end of the TabModel the new group's
+                // index should be based on tab model order. This will offset all other groups
+                // resulting in the index map needing to be regenerated.
+                resetGroupIdToGroupIndexMap();
+            }
         }
 
         if (mAbsentSelectedTab != null) {
             Tab absentSelectedTab = mAbsentSelectedTab;
             mAbsentSelectedTab = null;
             selectTab(absentSelectedTab);
+        }
+    }
+
+    private void resetGroupIdToGroupIndexMap() {
+        mGroupIdToGroupIndexMap.clear();
+        TabModel tabModel = getTabModel();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAt(i);
+            int groupId = getRootId(tab);
+            if (!mGroupIdToGroupIndexMap.containsKey(groupId)) {
+                mGroupIdToGroupIndexMap.put(groupId, mGroupIdToGroupIndexMap.size());
+            }
         }
     }
 
