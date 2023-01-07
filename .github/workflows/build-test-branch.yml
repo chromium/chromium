@@ -13,13 +13,18 @@ on:
         description: "Checked out repository slot to use"
         required: false
       run_tests:
-        description: "Run tests after building"
+        description: "Run static tests"
         type: boolean
         required: false
         default: "true"
       num_tests:
-        description: "Number of tests to run after building"
+        description: "Number of static tests to run"
         required: false
+      cypress_tests:
+        description: "Run cypress tests"
+        type: boolean
+        required: false
+        default: "false"
 
 jobs:
   build-test:
@@ -44,3 +49,4 @@ jobs:
           INPUT_SLOT: ${{ github.event.inputs.slot }}
           INPUT_RUN_TESTS: ${{ github.event.inputs.run_tests }}
           INPUT_NUM_TESTS: ${{ github.event.inputs.num_tests }}
+          INPUT_CYPRESS_TESTS: ${{ github.event.inputs.cypress_tests }}

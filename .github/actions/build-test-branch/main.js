@@ -29,6 +29,10 @@ const numTestsInput = process.env.INPUT_NUM_TESTS;
 console.log("NumTests", numTestsInput);
 const numTests = numTestsInput ? +numTestsInput : undefined;
 
+const cypressTestsInput = process.env.INPUT_CYPRESS_TESTS;
+console.log("CypressTests", cypressTestsInput);
+const runCypressTests = cypressTestsInput == "true";
+
 let requestName = `Chromium Build/Test Branch ${branchName} ${chromiumRevision}`;
 if (driverRevision) {
   requestName += ` driver ${driverRevision}`;
@@ -75,6 +79,21 @@ function platformTasks(platform) {
       [buildTask]
     );
     tasks.push(testStaticTask);
+  }
+
+  if (runCypressTests) {
+    const testCypressTask = newTask(
+      `Chromium Cypress Tests ${platform}`,
+      {
+        kind: "CypressTests",
+        runtime: "chromium",
+        revision: chromiumRevision,
+        driverRevision,
+      },
+      platform,
+      [buildTask]
+    );
+    tasks.push(testCypressTask);
   }
 
   return tasks;
