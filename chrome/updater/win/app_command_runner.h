@@ -47,6 +47,18 @@ class AppCommandRunner {
   HRESULT Run(const std::vector<std::wstring>& substitutions,
               base::Process& process) const;
 
+  // Formats a single `parameter` using
+  // `base::internal::DoReplaceStringPlaceholders`. Any placeholder `%N` in
+  // `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
+  // be escaped with a `%`.
+  //
+  // Returns `absl::nullopt` if:
+  // * a placeholder %N is encountered where N > substitutions.size().
+  // * a literal `%` is not escaped with a `%`.
+  static absl::optional<std::wstring> FormatParameter(
+      const std::wstring& parameter,
+      const std::vector<std::wstring>& substitutions);
+
  private:
   // Starts a process with separate `executable` and `parameters` components.
   // `executable` needs to be an absolute path.

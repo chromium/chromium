@@ -499,8 +499,7 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
       });
 }
 
-TEST(BaseInternalDoReplaceStringPlaceholdersTest,
-     ReplaceStringPercentPlaceholders) {
+TEST_F(AppCommandRunnerTest, ReplaceStringPercentPlaceholders) {
   const std::vector<std::wstring> no_substitutions = {};
   const std::vector<std::wstring> p1p2p3 = {L"p1", L"p2", L"p3"};
 
@@ -540,13 +539,8 @@ TEST(BaseInternalDoReplaceStringPlaceholdersTest,
   };
 
   for (const auto& test_case : test_cases) {
-    absl::optional<std::wstring> output =
-        base::internal::DoReplaceStringPlaceholders(
-            /*format_string*/ test_case.format_string,
-            /*subst*/ test_case.substitutions,
-            /*placeholder_prefix*/ L'%',
-            /*should_escape_multiple_placeholder_prefixes*/ false,
-            /*is_strict_mode*/ true, /*offsets*/ nullptr);
+    absl::optional<std::wstring> output = AppCommandRunner::FormatParameter(
+        test_case.format_string, test_case.substitutions);
     if (test_case.expected_output) {
       EXPECT_EQ(output.value(), test_case.expected_output);
     } else {

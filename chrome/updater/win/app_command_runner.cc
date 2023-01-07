@@ -127,6 +127,7 @@ AppCommandRunner& AppCommandRunner::operator=(const AppCommandRunner&) =
     default;
 AppCommandRunner::~AppCommandRunner() = default;
 
+// static
 HResultOr<AppCommandRunner> AppCommandRunner::LoadAppCommand(
     UpdaterScope scope,
     const std::wstring& app_id,
@@ -151,6 +152,7 @@ HResultOr<AppCommandRunner> AppCommandRunner::LoadAppCommand(
   return app_command_runner;
 }
 
+// static
 std::vector<AppCommandRunner>
 AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
     UpdaterScope scope,
@@ -193,6 +195,18 @@ HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
   return ExecuteAppCommand(executable_, parameters_, substitutions, process);
 }
 
+// static
+absl::optional<std::wstring> AppCommandRunner::FormatParameter(
+    const std::wstring& parameter,
+    const std::vector<std::wstring>& substitutions) {
+  return base::internal::DoReplaceStringPlaceholders(
+      /*format_string*/ parameter, /*subst*/ substitutions,
+      /*placeholder_prefix*/ L'%',
+      /*should_escape_multiple_placeholder_prefixes*/ false,
+      /*is_strict_mode*/ true, /*offsets*/ nullptr);
+}
+
+// static
 HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
                                        const std::wstring& parameters,
                                        base::Process& process) {
@@ -229,6 +243,7 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
   return S_OK;
 }
 
+// static
 HRESULT AppCommandRunner::GetAppCommandFormatComponents(
     UpdaterScope scope,
     std::wstring command_format,
@@ -259,21 +274,17 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   return S_OK;
 }
 
+// static
 absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
     const std::vector<std::wstring>& parameters,
     const std::vector<std::wstring>& substitutions) {
   std::wstring formatted_command_line;
   for (size_t i = 0; i < parameters.size(); ++i) {
     absl::optional<std::wstring> formatted_parameter =
-        base::internal::DoReplaceStringPlaceholders(
-            /*format_string*/ parameters[i], /*subst*/ substitutions,
-            /*placeholder_prefix*/ L'%',
-            /*should_escape_multiple_placeholder_prefixes*/ false,
-            /*is_strict_mode*/ true, /*offsets*/ nullptr);
+        FormatParameter(parameters[i], substitutions);
     if (!formatted_parameter) {
-      VLOG(1) << __func__
-              << " base::internal::DoReplaceStringPercentPlaceholders failed: "
-              << parameters[i] << ": " << substitutions.size();
+      VLOG(1) << __func__ << " FormatParameter failed: " << parameters[i]
+              << ": " << substitutions.size();
       return absl::nullopt;
     }
 
@@ -292,6 +303,7 @@ absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
   return formatted_command_line;
 }
 
+// static
 HRESULT AppCommandRunner::ExecuteAppCommand(
     const base::FilePath& executable,
     const std::vector<std::wstring>& parameters,
