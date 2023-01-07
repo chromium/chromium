@@ -20,6 +20,7 @@ ts_library("build_ts") {
     "cr_policy_strings.ts",
     "cr_scrollable_behavior_tests.ts",
     "list_property_update_behavior_tests.ts",
+    "typescript_utils/strict_query_test.ts",
   ]
   deps = [
     "../..:build_ts",

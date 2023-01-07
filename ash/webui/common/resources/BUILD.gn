@@ -196,7 +196,10 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_ts_generated") {
-  deps = [ "hotspot:build_ts" ]
+  deps = [
+    "hotspot:build_ts",
+    "typescript_utils:build_ts",
+  ]
   in_folder = "$target_gen_dir"
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_generated_manifest"
@@ -204,10 +207,11 @@ preprocess_if_expr("preprocess_ts_generated") {
     "hotspot/cros_hotspot_config.js",
     "hotspot/fake_hotspot_config.js",
     "hotspot/cros_hotspot_config.mojom-webui.js",
+    "typescript_utils/strict_query.js",
   ]
 }
 
-copy("copy_generated_dts_files") {
+copy("copy_generated_dts_files_hotspot") {
   deps = [ "hotspot:build_ts" ]
   sources = [
     "$target_gen_dir/hotspot/cros_hotspot_config.d.ts",
@@ -215,6 +219,21 @@ copy("copy_generated_dts_files") {
     "$target_gen_dir/hotspot/fake_hotspot_config.d.ts",
   ]
   outputs = [ "$target_gen_dir/$preprocessed_dir/hotspot/{{source_file_part}}" ]
+}
+
+copy("copy_generated_dts_files_typescript_utils") {
+  deps = [ "typescript_utils:build_ts" ]
+  sources = [ "$target_gen_dir/typescript_utils/strict_query.d.ts" ]
+  outputs = [
+    "$target_gen_dir/$preprocessed_dir/typescript_utils/{{source_file_part}}",
+  ]
+}
+
+group("copy_generated_dts_files") {
+  deps = [
+    ":copy_generated_dts_files_hotspot",
+    ":copy_generated_dts_files_typescript_utils",
+  ]
 }
 
 html_to_wrapper("html_wrapper_files") {
