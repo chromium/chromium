@@ -3794,9 +3794,9 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       * Si <ph name="FILTER_PLACEHOLDER" /> incluye las secciones <ph name="ISSUER_STRING_VALUE" /> y <ph name="SUBJECT_STRING_VALUE" />, solo se seleccionarán certificados de cliente que cumplan con ambas condiciones.
 
-      * Si <ph name="FILTER_PLACEHOLDER" /> incluye la sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado deberá contar con al menos una unidad organizacional que coincida con el valor indicado para ser elegido.
+      * Si <ph name="FILTER_PLACEHOLDER" /> incluye la sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado deberá contar con al menos una unidad organizativa que coincida con el valor indicado para ser elegido.
 
-      * Si <ph name="FILTER_PLACEHOLDER" /> incluye una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado deberá contar con al menos una unidad organizacional que coincida con el valor indicado para ser elegido.
+      * Si <ph name="FILTER_PLACEHOLDER" /> incluye una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado deberá contar con al menos una unidad organizativa que coincida con el valor indicado para ser elegido.
 
       * Si estableces <ph name="FILTER_PLACEHOLDER" /> como <ph name="EMPTY_DICTIONARY" />, no se aplicarán restricciones adicionales a la selección de certificados de cliente. Ten en cuenta que se seguirán aplicando los filtros que proporciona el servidor web.
 
@@ -8257,9 +8257,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       * Si <ph name="FILTER_PLACEHOLDER" /> incluye las secciones <ph name="ISSUER_STRING_VALUE" /> y <ph name="SUBJECT_STRING_VALUE" />, solo se seleccionarán certificados de cliente que cumplan con ambas condiciones.
 
-      * Si <ph name="FILTER_PLACEHOLDER" /> incluye la sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado deberá contar con al menos una unidad organizacional que coincida con el valor indicado para ser elegido.
+      * Si <ph name="FILTER_PLACEHOLDER" /> incluye la sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado deberá contar con al menos una unidad organizativa que coincida con el valor indicado para ser elegido.
 
-      * Si <ph name="FILTER_PLACEHOLDER" /> incluye una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado deberá contar con al menos una unidad organizacional que coincida con el valor indicado para ser elegido.
+      * Si <ph name="FILTER_PLACEHOLDER" /> incluye una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado deberá contar con al menos una unidad organizativa que coincida con el valor indicado para ser elegido.
 
       * Si estableces <ph name="FILTER_PLACEHOLDER" /> como <ph name="EMPTY_DICTIONARY" />, no se aplicarán restricciones adicionales a la selección de certificados de cliente. Ten en cuenta que se seguirán aplicando los filtros que proporciona el servidor web.
 
