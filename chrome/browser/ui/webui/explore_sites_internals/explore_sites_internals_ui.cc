@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"

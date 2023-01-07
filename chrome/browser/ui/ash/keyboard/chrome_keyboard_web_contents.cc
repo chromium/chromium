@@ -9,9 +9,9 @@
 
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/style/color_util.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"

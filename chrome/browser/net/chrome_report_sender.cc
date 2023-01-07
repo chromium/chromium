@@ -4,7 +4,7 @@
 
 #include "chrome/browser/net/chrome_report_sender.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/url_request/report_sender.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

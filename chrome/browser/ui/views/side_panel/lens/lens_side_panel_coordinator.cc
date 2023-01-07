@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include <iostream>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"

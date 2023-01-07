@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ACCESS_HANDLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"

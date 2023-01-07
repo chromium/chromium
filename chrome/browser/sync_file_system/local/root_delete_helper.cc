@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync_file_system/local/root_delete_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"

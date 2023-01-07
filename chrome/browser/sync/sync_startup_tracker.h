@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 #define CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

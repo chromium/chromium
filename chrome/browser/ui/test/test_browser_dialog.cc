@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -25,7 +25,7 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

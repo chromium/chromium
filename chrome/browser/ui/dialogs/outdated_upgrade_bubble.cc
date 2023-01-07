@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"

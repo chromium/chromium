@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/battery_saver_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/battery_saver_bubble_observer.h"

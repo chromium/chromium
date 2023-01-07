@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"

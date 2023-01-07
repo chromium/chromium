@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

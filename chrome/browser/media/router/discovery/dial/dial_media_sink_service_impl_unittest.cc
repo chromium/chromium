@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"

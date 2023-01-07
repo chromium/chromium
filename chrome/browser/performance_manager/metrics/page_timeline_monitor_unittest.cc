@@ -5,7 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"

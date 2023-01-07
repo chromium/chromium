@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/printer_query.h"

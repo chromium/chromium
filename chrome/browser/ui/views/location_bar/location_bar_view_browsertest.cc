@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"

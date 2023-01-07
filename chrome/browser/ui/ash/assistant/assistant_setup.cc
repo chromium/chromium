@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/profiles/profile.h"

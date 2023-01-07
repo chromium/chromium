@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 class Profile;

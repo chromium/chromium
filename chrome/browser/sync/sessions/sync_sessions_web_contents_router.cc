@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

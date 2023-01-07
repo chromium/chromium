@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/notification_handler.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 NotificationHandler::~NotificationHandler() = default;
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 class TemplateURLService;
 struct AutocompleteMatch;

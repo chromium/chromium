@@ -14,11 +14,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"

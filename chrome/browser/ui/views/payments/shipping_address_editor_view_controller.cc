@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"

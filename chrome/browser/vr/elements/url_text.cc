@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/url_text.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/browser/vr/elements/omnibox_formatting.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"

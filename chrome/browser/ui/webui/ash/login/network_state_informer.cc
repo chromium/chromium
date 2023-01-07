@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"

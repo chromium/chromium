@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_TOOLBAR_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_TOOLBAR_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/views/view.h"
 
 // Class responsible for the top toolbar shown during the GAIA sign-in within

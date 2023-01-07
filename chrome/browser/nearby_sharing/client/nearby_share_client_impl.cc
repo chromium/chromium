@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/base64url.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"

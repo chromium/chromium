@@ -49,7 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/signin/signin_util_win.h"
 #endif
 

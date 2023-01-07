@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"

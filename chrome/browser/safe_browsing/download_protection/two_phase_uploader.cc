@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "content/public/browser/browser_thread.h"

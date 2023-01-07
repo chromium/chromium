@@ -4,8 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_dns_prober.h"

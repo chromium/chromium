@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

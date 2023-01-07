@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"

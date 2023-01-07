@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"

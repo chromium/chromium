@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 
 namespace notifications {

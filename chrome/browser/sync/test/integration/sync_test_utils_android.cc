@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"

@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"

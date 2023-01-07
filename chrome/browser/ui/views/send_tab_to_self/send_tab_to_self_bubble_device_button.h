@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"

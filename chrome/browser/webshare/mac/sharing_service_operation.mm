@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/mac/scoped_nsobject.h"

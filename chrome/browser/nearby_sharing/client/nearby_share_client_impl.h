@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"

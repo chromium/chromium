@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/power_monitor/power_monitor_buildflags.h"

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/video_tutorials/tutorial.h"
 #include "components/keyed_service/core/keyed_service.h"

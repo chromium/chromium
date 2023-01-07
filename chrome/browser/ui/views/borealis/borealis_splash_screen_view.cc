@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"

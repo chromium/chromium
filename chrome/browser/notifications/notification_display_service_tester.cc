@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"

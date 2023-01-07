@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 

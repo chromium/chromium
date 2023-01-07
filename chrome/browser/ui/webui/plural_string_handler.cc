@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"

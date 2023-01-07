@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"

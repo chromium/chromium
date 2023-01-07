@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
 #include "chrome/common/webui_url_constants.h"

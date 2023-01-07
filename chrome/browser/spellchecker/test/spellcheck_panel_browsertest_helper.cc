@@ -4,8 +4,8 @@
 
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"

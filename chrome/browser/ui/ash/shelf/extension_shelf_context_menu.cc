@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"

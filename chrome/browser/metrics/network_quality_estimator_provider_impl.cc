@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

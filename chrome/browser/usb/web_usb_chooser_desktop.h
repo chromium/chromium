@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 
 // Implementation of WebUsbChooser for desktop browsers that uses a bubble to

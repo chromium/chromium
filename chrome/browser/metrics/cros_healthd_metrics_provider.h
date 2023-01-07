@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_CROS_HEALTHD_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_CROS_HEALTHD_METRICS_PROVIDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

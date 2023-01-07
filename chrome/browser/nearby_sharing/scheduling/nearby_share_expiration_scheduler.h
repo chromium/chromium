@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

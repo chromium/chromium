@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/zoom/chrome_zoom_level_otr_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/zoom/zoom_event_manager.h"
 
 ChromeZoomLevelOTRDelegate::ChromeZoomLevelOTRDelegate(

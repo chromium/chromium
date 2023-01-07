@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_DISCARD_BEFORE_UNLOAD_HELPER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_DISCARD_BEFORE_UNLOAD_HELPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace content {
 class WebContents;

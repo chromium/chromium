@@ -6,9 +6,9 @@
 
 #include <pk11pub.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"

@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "content/public/test/browser_task_environment.h"

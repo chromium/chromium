@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/tick_clock.h"

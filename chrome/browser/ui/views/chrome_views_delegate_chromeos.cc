@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"

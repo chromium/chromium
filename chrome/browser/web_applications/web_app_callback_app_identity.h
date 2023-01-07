@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CALLBACK_APP_IDENTITY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CALLBACK_APP_IDENTITY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace web_app {
 

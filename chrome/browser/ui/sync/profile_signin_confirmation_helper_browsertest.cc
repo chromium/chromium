@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"

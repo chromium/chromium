@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

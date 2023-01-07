@@ -5,7 +5,7 @@
 #include "chrome/browser/spellchecker/spelling_request.h"
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"

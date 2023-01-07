@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_IDLE_DIALOG_H_
 #define CHROME_BROWSER_UI_IDLE_DIALOG_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/widget/widget.h"

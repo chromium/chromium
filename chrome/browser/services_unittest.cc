@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"

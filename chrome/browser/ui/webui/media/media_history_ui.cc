@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"

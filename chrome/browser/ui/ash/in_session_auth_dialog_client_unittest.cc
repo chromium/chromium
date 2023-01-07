@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

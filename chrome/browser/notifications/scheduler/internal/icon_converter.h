@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_converter_result.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

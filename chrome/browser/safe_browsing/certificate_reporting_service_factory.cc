@@ -4,8 +4,8 @@
 
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

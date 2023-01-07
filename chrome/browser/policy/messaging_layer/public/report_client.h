@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "components/reporting/client/report_queue_configuration.h"

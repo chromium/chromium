@@ -4,8 +4,8 @@
 
 #include "chrome/browser/offline_pages/android/evaluation/evaluation_test_scheduler.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"

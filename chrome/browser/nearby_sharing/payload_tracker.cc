@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"

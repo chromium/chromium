@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include <algorithm>
 #include <memory>
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"

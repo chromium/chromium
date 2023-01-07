@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 
 namespace syncer {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"

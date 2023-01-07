@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_RESOURCES_INTEGRITY_H_
 #define CHROME_BROWSER_RESOURCES_INTEGRITY_H_
 
-#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/buildflags.h"
 #include "crypto/sha2.h"
 

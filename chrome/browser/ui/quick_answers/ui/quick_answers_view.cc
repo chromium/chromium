@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"

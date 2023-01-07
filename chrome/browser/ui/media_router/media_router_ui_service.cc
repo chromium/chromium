@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"

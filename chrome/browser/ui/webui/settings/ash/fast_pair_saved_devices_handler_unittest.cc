@@ -12,7 +12,7 @@
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"

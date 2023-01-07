@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/sync_file_system/file_change.h"

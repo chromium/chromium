@@ -4,9 +4,9 @@
 
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"

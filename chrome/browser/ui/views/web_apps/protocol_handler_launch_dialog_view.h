@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_apps/launch_app_user_choice_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_id.h"

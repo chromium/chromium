@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/driver/sync_service_impl.h"

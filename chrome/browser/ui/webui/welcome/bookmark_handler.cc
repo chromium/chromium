@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/welcome/bookmark_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"

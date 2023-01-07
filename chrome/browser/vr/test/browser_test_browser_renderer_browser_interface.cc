@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/test/browser_test_browser_renderer_browser_interface.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 

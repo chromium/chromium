@@ -4,8 +4,8 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 
 namespace safe_browsing {

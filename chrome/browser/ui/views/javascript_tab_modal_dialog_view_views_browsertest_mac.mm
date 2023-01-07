@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/javascript_tab_modal_dialog_view_views.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/settings/ash/about_section.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"

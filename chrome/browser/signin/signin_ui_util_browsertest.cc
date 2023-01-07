@@ -7,7 +7,7 @@
 
 #include "chrome/browser/signin/signin_ui_util.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"

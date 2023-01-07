@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

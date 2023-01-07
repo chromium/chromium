@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

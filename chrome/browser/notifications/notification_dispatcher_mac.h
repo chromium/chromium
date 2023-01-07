@@ -8,8 +8,8 @@
 #include <string>
 #include <tuple>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"

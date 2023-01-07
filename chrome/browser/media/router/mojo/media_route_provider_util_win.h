@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_MOJO_MEDIA_ROUTE_PROVIDER_UTIL_WIN_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_MOJO_MEDIA_ROUTE_PROVIDER_UTIL_WIN_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace media_router {
 

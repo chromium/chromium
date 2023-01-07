@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 ProcessSingletonModalDialogLock::ProcessSingletonModalDialogLock(
     const ProcessSingleton::NotificationCallback& original_callback)

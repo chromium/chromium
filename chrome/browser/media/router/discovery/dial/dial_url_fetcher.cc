@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

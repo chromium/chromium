@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"

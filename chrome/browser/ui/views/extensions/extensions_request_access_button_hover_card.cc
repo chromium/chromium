@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"

@@ -7,7 +7,7 @@
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/linux_util.h"
 #include "base/process/launch.h"
 #include "base/task/thread_pool.h"

@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"

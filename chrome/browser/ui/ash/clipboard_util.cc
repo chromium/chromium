@@ -10,9 +10,9 @@
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/base64.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"

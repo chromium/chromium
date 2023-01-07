@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

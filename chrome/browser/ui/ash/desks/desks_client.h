@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

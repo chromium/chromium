@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

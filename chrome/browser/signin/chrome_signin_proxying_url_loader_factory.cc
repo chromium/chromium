@@ -5,7 +5,7 @@
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"

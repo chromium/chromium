@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 

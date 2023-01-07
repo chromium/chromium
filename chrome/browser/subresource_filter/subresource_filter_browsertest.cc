@@ -10,8 +10,8 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"

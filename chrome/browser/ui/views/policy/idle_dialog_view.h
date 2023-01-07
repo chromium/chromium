@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_POLICY_IDLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_POLICY_IDLE_DIALOG_VIEW_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

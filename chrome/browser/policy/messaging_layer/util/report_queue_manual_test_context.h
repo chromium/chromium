@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORT_QUEUE_MANUAL_TEST_CONTEXT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORT_QUEUE_MANUAL_TEST_CONTEXT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"

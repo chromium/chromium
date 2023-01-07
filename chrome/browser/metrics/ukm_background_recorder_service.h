@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_UKM_BACKGROUND_RECORDER_SERVICE_H_
 #define CHROME_BROWSER_METRICS_UKM_BACKGROUND_RECORDER_SERVICE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"

@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_display_service.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"

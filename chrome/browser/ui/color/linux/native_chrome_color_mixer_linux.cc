@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"

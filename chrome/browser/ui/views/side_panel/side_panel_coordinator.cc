@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

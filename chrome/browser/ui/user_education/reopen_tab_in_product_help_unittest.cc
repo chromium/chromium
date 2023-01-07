@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"

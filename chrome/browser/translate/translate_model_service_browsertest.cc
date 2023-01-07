@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

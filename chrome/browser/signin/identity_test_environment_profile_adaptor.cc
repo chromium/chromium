@@ -4,7 +4,7 @@
 
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

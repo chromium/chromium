@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"

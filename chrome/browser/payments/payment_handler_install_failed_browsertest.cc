@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"

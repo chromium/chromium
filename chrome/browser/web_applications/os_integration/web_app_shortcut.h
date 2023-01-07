@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

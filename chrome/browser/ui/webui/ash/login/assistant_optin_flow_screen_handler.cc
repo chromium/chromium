@@ -8,9 +8,9 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"

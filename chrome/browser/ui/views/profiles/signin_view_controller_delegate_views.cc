@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/signin_view_controller_delegate_views.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"

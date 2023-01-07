@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/win/registry.h"
 
 // This class monitors a registry key to detect if it gets deleted. Delete the

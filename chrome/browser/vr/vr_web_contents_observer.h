@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_VR_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_VR_VR_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "content/public/browser/web_contents_observer.h"

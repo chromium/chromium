@@ -7,7 +7,7 @@
 
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole.h"
 #include "chromeos/ash/components/network/firewall_hole.h"

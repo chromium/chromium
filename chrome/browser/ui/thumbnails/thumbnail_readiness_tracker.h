@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "content/public/browser/web_contents.h"

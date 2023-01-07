@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"

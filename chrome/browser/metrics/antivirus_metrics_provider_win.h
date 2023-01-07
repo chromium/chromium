@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

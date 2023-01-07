@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

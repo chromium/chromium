@@ -13,7 +13,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"

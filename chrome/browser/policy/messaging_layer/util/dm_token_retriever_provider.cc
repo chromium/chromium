@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/policy/messaging_layer/util/user_dm_token_retriever.h"
 #include "components/reporting/client/dm_token_retriever.h"

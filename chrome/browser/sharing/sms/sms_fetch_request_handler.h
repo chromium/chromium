@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"

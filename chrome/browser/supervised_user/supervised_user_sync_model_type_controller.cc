@@ -4,7 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_sync_model_type_controller.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync/model/model_type_store_service.h"
 

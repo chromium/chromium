@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/test/animation_utils.h"

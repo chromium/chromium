@@ -4,7 +4,7 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_params.h"

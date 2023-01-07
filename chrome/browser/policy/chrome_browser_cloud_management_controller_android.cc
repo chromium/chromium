@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/net/system_network_context_manager.h"

@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"

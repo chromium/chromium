@@ -4,8 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

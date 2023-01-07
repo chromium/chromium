@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/process/launch.h"

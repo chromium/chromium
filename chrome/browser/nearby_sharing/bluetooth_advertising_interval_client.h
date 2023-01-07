@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_BLUETOOTH_ADVERTISING_INTERVAL_CLIENT_H_
 #define CHROME_BROWSER_NEARBY_SHARING_BLUETOOTH_ADVERTISING_INTERVAL_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

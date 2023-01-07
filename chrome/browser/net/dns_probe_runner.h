@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_NET_DNS_PROBE_RUNNER_H_
 #define CHROME_BROWSER_NET_DNS_PROBE_RUNNER_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

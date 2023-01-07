@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/cdm_storage_id.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,7 +17,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
 

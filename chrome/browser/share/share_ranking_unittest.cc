@@ -4,7 +4,7 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/share/fake_share_history.h"

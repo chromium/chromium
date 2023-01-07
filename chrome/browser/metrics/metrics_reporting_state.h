@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_
 #define CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 

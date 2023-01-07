@@ -9,9 +9,9 @@
 #include <string>
 #include <tuple>
 
-#include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_dispatcher_mac.h"

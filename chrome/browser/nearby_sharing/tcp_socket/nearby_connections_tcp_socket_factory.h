@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

@@ -6,8 +6,8 @@
 
 #include "base/metrics/field_trial_param_associator.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"

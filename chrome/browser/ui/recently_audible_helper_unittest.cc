@@ -6,7 +6,7 @@
 
 #include <list>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"

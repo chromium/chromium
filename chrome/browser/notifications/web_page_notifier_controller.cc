@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/notifier_metadata.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"

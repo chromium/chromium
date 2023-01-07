@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_PROVIDER_H_
 #define CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace content {
 class BrowserContext;

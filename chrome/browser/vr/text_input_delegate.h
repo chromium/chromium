@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_TEXT_INPUT_DELEGATE_H_
 #define CHROME_BROWSER_VR_TEXT_INPUT_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {

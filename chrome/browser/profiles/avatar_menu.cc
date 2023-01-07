@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/avatar_menu.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"

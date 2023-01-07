@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"

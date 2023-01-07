@@ -35,8 +35,8 @@ E2ETestBase = class extends AccessibilityTestBase {
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
   #include "ash/shell.h"
-  #include "base/bind.h"
-  #include "base/callback.h"
+  #include "base/functional/bind.h"
+  #include "base/functional/callback.h"
   #include "base/containers/flat_set.h"
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/browser/ash/crosapi/browser_manager.h"

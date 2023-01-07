@@ -8,8 +8,8 @@
 #include <memory>
 #include <queue>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/macros.h"

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/reauth_result.h"

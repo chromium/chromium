@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/device_display_handler.h"
 
 #include "ash/public/ash_interfaces.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"

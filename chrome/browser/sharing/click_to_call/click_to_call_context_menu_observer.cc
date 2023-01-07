@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharing/click_to_call/click_to_call_context_menu_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"

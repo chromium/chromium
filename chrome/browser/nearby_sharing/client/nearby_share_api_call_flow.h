@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

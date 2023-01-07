@@ -4,7 +4,7 @@
 
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"

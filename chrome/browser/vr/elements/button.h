@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 #define CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/elements/ui_element.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"

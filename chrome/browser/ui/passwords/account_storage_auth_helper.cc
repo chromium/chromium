@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/signin/public/base/consent_level.h"

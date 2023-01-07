@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"

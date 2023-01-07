@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"

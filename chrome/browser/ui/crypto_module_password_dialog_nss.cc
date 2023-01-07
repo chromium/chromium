@@ -7,8 +7,8 @@
 #include <pk11pub.h>
 #include <stddef.h>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;

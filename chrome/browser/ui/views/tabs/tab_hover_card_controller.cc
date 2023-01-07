@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
-#include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"

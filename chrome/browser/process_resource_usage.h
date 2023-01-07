@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/common/resource_usage_reporter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

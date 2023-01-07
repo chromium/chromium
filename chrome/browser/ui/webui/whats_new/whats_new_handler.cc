@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

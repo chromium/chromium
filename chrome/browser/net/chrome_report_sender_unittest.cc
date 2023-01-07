@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/load_flags.h"

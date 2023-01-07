@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/media_router/media_router_internals_webui_message_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/media_router/browser/media_router.h"
 
 namespace media_router {

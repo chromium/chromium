@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"

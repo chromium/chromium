@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/stylus_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"

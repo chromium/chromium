@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "net/base/ip_address.h"

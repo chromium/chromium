@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/security_events/security_event_recorder_impl.h"

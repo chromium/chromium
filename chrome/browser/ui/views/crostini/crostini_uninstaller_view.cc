@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"

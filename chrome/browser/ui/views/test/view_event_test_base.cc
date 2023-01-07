@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "base/memory/raw_ptr.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

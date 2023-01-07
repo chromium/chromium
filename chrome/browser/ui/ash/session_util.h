@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SESSION_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_SESSION_UTIL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace aura {

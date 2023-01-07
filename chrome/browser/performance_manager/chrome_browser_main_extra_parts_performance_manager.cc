@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor_buildflags.h"

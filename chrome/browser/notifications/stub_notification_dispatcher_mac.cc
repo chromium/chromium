@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
 StubNotificationDispatcherMac::StubNotificationDispatcherMac() = default;

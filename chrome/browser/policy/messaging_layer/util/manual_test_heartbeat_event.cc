@@ -4,8 +4,8 @@
 
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event.h"
 
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

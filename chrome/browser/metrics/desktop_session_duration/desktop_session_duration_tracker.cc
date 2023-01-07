@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"

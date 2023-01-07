@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/android/jni_headers/ProfileManagerUtils_jni.h"

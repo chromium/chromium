@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_
 #define CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 

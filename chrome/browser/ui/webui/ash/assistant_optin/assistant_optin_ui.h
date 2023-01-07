@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/public/cpp/assistant/assistant_setup.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"

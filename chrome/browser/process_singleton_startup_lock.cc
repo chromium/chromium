@@ -4,8 +4,8 @@
 
 #include "chrome/browser/process_singleton_startup_lock.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 
 ProcessSingletonStartupLock::ProcessSingletonStartupLock(
     const ProcessSingleton::NotificationCallback& original_callback)

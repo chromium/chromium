@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"

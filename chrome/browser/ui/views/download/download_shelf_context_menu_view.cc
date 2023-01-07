@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"

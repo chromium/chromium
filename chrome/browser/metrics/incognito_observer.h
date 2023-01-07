@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_INCOGNITO_OBSERVER_H_
 #define CHROME_BROWSER_METRICS_INCOGNITO_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 // Encapsulates platform-specific functionality for observing events that may
 // cause "is incognito active?" state to change. The class takes a closure that

@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"

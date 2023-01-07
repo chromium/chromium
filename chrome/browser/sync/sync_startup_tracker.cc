@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/sync_startup_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/sync/driver/sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

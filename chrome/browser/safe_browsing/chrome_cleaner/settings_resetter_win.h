@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/default_settings_fetcher.h"
 
 class Profile;

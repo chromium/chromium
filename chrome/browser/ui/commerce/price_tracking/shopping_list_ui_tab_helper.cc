@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 
-#include "base/bind.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

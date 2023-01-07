@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace chrome_browser_sharing {
 class SharingMessage;

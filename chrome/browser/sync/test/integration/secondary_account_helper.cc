@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"

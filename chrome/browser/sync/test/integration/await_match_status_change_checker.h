@@ -7,7 +7,7 @@
 
 #include <iosfwd>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
 // Helper class used in the datatype specific AwaitAllModelsMatch

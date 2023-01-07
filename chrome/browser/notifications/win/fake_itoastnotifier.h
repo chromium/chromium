@@ -8,7 +8,7 @@
 #include <windows.ui.notifications.h>
 #include <wrl/implements.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class NotificationLaunchId;
 

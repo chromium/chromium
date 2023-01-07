@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

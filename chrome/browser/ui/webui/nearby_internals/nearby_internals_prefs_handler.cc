@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_prefs_handler.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/profiles/profile.h"

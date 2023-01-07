@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"

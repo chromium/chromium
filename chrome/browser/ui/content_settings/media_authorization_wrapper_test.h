@@ -7,7 +7,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
 
 enum AuthStatus {

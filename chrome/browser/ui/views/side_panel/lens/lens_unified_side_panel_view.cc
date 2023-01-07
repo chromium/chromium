@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 namespace {

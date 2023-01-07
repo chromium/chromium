@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
 namespace gfx {

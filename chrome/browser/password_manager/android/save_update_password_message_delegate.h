@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"

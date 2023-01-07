@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 
-#include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

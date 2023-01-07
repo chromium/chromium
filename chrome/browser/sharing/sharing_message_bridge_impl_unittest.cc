@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharing/sharing_message_bridge_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"

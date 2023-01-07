@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/base_scheduler_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/permissions/attestation_permission_request.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_request.h"

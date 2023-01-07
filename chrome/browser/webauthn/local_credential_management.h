@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"

@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

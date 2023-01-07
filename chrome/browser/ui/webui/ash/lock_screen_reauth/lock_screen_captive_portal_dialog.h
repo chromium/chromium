@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
 #include "ui/views/widget/widget.h"
 

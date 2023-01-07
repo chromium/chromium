@@ -4,10 +4,10 @@
 
 #include "chrome/browser/net/file_downloader.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/test/test_utils.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/webshare/win/fake_data_transfer_manager_interop.h"
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/webshare/win/fake_data_transfer_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

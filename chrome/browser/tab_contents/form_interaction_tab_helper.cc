@@ -4,7 +4,7 @@
 
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"

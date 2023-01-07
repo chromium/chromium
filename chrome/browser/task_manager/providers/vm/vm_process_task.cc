@@ -4,7 +4,7 @@
 
 #include "chrome/browser/task_manager/providers/vm/vm_process_task.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"

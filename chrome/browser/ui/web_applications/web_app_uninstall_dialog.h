@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
 

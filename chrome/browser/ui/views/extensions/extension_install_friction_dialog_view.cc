@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"

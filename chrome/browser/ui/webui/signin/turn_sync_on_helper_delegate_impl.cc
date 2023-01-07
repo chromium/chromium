@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"

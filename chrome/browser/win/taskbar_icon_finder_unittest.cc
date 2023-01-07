@@ -4,8 +4,8 @@
 
 #include "chrome/browser/win/taskbar_icon_finder.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"

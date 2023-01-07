@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"

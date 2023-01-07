@@ -4,8 +4,8 @@
 
 #include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"

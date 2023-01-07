@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/send_message_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"

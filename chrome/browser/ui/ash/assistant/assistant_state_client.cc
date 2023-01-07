@@ -9,7 +9,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"

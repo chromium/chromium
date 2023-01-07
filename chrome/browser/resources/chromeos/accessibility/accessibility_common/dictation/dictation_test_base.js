@@ -121,8 +121,8 @@ DictationE2ETestBase = class extends E2ETestBase {
     GEN(`
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "ui/accessibility/accessibility_features.h"

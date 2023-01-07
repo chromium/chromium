@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"

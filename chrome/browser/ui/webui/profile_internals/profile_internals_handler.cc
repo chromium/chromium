@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_handler.h"
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

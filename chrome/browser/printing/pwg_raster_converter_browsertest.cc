@@ -4,8 +4,8 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"

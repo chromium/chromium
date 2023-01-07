@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/platform_ui_input_delegate.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/platform_input_handler.h"
 

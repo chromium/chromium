@@ -14,9 +14,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 
 namespace nearbyshare {

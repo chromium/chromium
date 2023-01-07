@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"

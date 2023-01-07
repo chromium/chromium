@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

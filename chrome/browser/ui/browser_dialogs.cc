@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/browser_dialogs.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 
 #if !defined(TOOLKIT_VIEWS)

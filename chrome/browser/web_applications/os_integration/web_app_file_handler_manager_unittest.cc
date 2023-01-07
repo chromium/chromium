@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"

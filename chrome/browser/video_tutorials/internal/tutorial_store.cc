@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
 namespace video_tutorials {

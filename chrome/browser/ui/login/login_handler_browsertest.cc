@@ -8,8 +8,8 @@
 #include <map>
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"

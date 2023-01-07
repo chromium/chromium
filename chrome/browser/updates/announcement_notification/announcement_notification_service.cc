@@ -4,8 +4,8 @@
 
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"

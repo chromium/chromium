@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/bluetooth_handler.h"
 
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/quick_pair/fast_pair_support_utils.h"
 #include "chromeos/ash/components/network/network_event_log.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_prompt_views.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"

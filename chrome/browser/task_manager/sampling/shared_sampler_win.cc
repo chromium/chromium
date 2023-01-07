@@ -9,9 +9,9 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

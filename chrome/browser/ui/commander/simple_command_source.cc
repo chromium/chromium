@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/commander/simple_command_source.h"
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"

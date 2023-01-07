@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/text_button.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/vr/elements/rect.h"
 
 namespace vr {

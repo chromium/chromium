@@ -5,8 +5,8 @@
 #include "content/public/browser/picture_in_picture_window_controller.h"
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"

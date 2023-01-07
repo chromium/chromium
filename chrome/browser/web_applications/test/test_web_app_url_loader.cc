@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace web_app {

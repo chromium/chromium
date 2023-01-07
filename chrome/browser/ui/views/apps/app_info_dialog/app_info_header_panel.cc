@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_header_panel.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"

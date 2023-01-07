@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sync/glue/sync_start_util.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

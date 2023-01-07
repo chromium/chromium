@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"

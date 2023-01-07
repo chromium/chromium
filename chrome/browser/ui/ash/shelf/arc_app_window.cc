@@ -6,7 +6,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"

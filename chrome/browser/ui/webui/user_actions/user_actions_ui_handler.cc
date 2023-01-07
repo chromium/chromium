@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/user_actions/user_actions_ui_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "base/values.h"

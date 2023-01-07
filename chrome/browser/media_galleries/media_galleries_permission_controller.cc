@@ -5,8 +5,8 @@
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"

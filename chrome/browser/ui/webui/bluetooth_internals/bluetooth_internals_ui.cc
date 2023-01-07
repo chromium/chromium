@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_handler.h"

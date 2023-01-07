@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/lacros/quick_answers_state_lacros.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"

@@ -8,11 +8,11 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"

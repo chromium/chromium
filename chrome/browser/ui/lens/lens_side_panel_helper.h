@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SIDE_PANEL_HELPER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SIDE_PANEL_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "url/gurl.h"
 
 namespace content {

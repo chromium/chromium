@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
 
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"

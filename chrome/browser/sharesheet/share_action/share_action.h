@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"

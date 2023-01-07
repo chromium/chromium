@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/share/android/jni_headers/QRCodeGenerationRequest_jni.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"

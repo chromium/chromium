@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"

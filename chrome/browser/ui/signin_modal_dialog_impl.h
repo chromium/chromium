@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_MODAL_DIALOG_IMPL_H_
 #define CHROME_BROWSER_UI_SIGNIN_MODAL_DIALOG_IMPL_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"

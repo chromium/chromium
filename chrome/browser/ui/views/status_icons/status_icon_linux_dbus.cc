@@ -9,10 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"

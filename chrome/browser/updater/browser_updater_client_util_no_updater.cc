@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/updater/updater_scope.h"
 
 std::string CurrentlyInstalledVersion() {

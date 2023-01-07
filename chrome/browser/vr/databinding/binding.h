@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_DATABINDING_BINDING_H_
 #define CHROME_BROWSER_VR_DATABINDING_BINDING_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 #include <memory>
 

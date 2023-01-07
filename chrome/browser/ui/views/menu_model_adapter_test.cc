@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/menu/menu_model_adapter.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
 #include "chrome/installer/util/callback_work_item.h"
 #include "chrome/installer/util/delete_tree_work_item.h"

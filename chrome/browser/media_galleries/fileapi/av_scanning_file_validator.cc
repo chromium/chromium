@@ -6,14 +6,14 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"

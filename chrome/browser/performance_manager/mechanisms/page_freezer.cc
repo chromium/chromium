@@ -4,7 +4,7 @@
 
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"

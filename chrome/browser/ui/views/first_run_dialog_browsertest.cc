@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/first_run_dialog.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 

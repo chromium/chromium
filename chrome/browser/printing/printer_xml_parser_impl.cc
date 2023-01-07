@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

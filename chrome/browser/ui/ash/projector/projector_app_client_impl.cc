@@ -11,7 +11,7 @@
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

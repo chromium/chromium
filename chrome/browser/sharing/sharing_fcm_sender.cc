@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"

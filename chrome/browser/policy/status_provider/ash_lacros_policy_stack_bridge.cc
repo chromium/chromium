@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"

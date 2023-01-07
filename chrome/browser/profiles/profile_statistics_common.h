@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace profiles {
 // Constants for the categories in ProfileCategoryStats.

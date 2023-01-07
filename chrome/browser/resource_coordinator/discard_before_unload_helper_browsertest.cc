@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/discard_before_unload_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"

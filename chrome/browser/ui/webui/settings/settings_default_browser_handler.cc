@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_process.h"

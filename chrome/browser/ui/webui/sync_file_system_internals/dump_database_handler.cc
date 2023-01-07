@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/sync_file_system_internals/dump_database_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"

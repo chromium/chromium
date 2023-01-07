@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_FETCHER_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_FETCHER_WIN_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class PrefService;
 

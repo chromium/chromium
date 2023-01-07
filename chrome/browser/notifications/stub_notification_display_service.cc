@@ -4,8 +4,8 @@
 
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_handler.h"

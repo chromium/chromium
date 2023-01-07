@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

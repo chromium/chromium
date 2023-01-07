@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_object_enumerator.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_read_file_worker.h"

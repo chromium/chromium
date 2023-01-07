@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_model.h"
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"

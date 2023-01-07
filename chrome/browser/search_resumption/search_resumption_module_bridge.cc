@@ -5,7 +5,7 @@
 #include "search_resumption_module_bridge.h"
 
 #include "base/android/jni_array.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"

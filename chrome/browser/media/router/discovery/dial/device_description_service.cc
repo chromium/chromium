@@ -13,8 +13,8 @@
 #include <sstream>
 #endif
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"

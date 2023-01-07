@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/buildflags.h"

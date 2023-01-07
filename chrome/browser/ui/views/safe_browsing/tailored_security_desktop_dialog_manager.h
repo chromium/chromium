@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_DESKTOP_DIALOG_MANAGER_H_
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_DESKTOP_DIALOG_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class Browser;
 

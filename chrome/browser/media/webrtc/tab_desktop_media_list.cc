@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"

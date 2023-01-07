@@ -4,7 +4,7 @@
 
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/offline_pages/core/client_namespace_constants.h"

@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"

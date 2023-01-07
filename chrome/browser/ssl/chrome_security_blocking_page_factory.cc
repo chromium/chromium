@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

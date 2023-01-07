@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"

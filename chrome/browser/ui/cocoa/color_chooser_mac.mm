@@ -4,8 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/color_chooser_mac.h"
 
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"

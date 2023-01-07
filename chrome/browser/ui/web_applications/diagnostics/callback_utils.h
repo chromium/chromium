@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_CALLBACK_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_CALLBACK_UTILS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace web_app {
 

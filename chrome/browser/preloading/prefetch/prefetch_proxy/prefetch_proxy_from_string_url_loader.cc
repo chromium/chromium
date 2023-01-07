@@ -4,8 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"

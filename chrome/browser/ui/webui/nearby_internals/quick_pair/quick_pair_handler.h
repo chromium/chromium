@@ -8,7 +8,7 @@
 #include <memory>
 #include "ash/quick_pair/common/log_buffer.h"
 #include "ash/quick_pair/common/logging.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

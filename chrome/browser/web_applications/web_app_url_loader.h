@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_URL_LOADER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_URL_LOADER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
 class GURL;

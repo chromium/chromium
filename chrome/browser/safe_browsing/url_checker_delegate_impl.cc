@@ -4,8 +4,8 @@
 
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"

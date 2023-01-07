@@ -4,7 +4,7 @@
 
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"

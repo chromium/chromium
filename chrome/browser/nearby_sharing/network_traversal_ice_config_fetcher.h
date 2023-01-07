@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "url/gurl.h"

@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "components/embedder_support/user_agent_utils.h"

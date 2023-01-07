@@ -5,7 +5,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"

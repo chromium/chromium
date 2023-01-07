@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui_message_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/values.h"
 #include "chrome/browser/download/background_download_service_factory.h"

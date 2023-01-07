@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

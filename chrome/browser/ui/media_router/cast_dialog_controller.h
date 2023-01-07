@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_CONTROLLER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_route.h"

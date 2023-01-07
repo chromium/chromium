@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/device_pointer_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 

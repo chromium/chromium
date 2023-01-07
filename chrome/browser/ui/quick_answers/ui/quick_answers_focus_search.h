@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"

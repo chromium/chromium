@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_uploader.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

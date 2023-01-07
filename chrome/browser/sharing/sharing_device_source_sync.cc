@@ -8,8 +8,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/callback.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/sharing/features.h"

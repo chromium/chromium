@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"

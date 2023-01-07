@@ -6,8 +6,8 @@
 #include <numeric>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"

@@ -8,8 +8,8 @@
 #include <map>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/simple_factory_key.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharing/sharing_message_sender.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/fake_device_info.h"

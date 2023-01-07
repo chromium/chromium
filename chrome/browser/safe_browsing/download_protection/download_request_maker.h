@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "components/download/public/common/download_item.h"

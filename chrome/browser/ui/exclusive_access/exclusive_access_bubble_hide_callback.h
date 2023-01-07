@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_HIDE_CALLBACK_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_HIDE_CALLBACK_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 enum class ExclusiveAccessBubbleHideReason {
   // The bubble was never shown. e.g.

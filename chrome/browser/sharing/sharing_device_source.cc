@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharing/sharing_device_source.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 SharingDeviceSource::SharingDeviceSource() = default;
 

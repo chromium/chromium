@@ -4,9 +4,9 @@
 
 #include "chrome/browser/vr/databinding/vector_binding.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/databinding/vector_element_binding.h"
 #include "testing/gtest/include/gtest/gtest.h"

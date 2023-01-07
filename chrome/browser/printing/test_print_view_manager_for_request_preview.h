@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_FOR_REQUEST_PREVIEW_H_
 #define CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_FOR_REQUEST_PREVIEW_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "components/printing/common/print.mojom.h"
 

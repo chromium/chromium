@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/tts_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

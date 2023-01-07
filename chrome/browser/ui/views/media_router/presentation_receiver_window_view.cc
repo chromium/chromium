@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/window_properties.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

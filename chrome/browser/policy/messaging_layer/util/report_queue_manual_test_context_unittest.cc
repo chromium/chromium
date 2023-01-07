@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"

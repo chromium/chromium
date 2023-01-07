@@ -4,8 +4,8 @@
 
 #include "chrome/browser/metrics/perf/perf_output.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"

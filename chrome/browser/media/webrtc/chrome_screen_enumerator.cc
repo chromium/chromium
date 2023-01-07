@@ -21,7 +21,7 @@
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/desktop_capture.h"
 #endif
 

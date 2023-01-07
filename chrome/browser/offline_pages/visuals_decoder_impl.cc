@@ -4,8 +4,8 @@
 
 #include "chrome/browser/offline_pages/visuals_decoder_impl.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

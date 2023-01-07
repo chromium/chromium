@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"

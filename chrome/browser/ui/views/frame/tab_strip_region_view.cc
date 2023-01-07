@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"

@@ -4,9 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/first_run_dialog_cocoa.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/mac/bundle_locations.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"

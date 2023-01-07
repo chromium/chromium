@@ -4,8 +4,8 @@
 
 #include "chrome/browser/search/background/ntp_background_service.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"

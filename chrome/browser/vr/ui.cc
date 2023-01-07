@@ -11,8 +11,8 @@
 
 #include "chrome/browser/vr/ui.h"
 
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"

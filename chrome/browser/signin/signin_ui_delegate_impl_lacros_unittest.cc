@@ -4,8 +4,8 @@
 
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 
-#include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"

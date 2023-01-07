@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"

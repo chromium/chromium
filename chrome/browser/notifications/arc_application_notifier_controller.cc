@@ -7,7 +7,7 @@
 #include <set>
 
 #include "ash/public/cpp/notifier_metadata.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

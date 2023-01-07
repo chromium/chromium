@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"

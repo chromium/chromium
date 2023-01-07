@@ -9,9 +9,9 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

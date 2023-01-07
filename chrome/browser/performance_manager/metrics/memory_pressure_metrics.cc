@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"

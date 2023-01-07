@@ -6,7 +6,7 @@
 #include <string>
 
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

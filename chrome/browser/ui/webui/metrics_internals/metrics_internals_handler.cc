@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/metrics_internals/metrics_internals_handler.h"
 
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

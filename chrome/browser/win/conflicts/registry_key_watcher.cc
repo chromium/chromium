@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 // static
 std::unique_ptr<RegistryKeyWatcher> RegistryKeyWatcher::Create(

@@ -12,8 +12,8 @@
 #include <windows.h>
 #endif
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"

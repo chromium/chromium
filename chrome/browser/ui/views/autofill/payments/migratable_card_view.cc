@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_dialog_view.h"

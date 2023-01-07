@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"

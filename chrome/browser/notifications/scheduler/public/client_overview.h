@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_CLIENT_OVERVIEW_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_CLIENT_OVERVIEW_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 #include "chrome/browser/notifications/scheduler/public/impression_detail.h"
 

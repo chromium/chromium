@@ -4,8 +4,8 @@
 
 #include "chrome/browser/policy/networking/network_configuration_updater.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_utils.h"

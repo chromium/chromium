@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_PROBER_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_PROBER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"

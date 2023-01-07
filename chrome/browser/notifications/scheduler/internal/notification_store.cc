@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/scheduler/internal/notification_store.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/notifications/scheduler/internal/proto_conversion.h"
 
 namespace leveldb_proto {

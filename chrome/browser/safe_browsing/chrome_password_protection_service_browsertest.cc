@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

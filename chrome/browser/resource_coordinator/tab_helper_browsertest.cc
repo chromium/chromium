@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/ui/browser.h"

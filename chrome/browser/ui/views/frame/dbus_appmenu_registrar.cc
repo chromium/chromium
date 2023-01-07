@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/dbus_appmenu_registrar.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"

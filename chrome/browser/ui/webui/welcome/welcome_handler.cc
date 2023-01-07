@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/welcome/welcome_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"

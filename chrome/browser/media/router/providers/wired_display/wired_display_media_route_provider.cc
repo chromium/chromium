@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/permissions/permission_update_requester_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_enums.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"

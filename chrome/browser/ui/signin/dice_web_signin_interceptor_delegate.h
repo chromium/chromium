@@ -7,7 +7,7 @@
 
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace content {
 class WebContents;

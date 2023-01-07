@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/download/download_prefs.h"

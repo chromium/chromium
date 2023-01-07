@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/button.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/vr/elements/invisible_hit_target.h"
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/elements/ui_element.h"

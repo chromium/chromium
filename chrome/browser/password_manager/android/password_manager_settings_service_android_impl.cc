@@ -4,8 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"

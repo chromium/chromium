@@ -4,7 +4,7 @@
 
 #include "chrome/browser/updater/scheduler.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace updater {
 

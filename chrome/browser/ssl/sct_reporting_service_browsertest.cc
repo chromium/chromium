@@ -6,9 +6,9 @@
 #include <tuple>
 
 #include "base/base64.h"
-#include "base/callback.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"

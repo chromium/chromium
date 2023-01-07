@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller_client.h"
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"

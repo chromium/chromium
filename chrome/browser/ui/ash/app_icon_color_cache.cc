@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"

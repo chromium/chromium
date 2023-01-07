@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/callback_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {

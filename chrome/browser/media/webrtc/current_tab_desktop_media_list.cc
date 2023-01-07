@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 
 // static
 std::unique_ptr<PrefetchProxyCookieListener>

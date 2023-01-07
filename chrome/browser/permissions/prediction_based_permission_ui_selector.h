@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_ui_selector.h"

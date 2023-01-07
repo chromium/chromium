@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_REVOCATION_REQUEST_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_REVOCATION_REQUEST_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

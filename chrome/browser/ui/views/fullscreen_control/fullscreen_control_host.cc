@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/simple_test_tick_clock.h"

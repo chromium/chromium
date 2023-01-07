@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "base/base_paths_posix.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_OMNIBOX_TEXT_FIELD_H_
 #define CHROME_BROWSER_VR_ELEMENTS_OMNIBOX_TEXT_FIELD_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/vr/elements/text_input.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/model/text_input_info.h"

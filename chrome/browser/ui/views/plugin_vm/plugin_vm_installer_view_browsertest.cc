@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

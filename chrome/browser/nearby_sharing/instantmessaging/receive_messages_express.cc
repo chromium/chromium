@@ -6,8 +6,8 @@
 
 #include <sstream>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"

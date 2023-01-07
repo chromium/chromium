@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/task_dependency_manager.h"

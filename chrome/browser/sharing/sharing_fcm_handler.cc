@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"

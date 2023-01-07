@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include <memory>
 
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"

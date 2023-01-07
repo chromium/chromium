@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ui/android/window_android.h"
 

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"

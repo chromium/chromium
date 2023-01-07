@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"

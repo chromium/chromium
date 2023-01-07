@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

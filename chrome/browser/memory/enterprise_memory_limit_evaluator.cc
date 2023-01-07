@@ -4,7 +4,7 @@
 
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/process_node.h"

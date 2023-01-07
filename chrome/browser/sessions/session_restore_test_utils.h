@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 
 class Profile;

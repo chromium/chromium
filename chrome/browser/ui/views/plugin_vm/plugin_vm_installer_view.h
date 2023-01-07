@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

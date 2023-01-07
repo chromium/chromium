@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/hats_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"

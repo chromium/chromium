@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

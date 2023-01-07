@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"

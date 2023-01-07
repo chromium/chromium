@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UPGRADE_DETECTOR_GET_INSTALLED_VERSION_H_
 #define CHROME_BROWSER_UPGRADE_DETECTOR_GET_INSTALLED_VERSION_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

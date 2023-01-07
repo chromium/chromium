@@ -4,7 +4,7 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"

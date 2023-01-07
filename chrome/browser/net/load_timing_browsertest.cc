@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"

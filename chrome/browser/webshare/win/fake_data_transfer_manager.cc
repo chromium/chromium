@@ -6,8 +6,8 @@
 
 #include <wrl/module.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"

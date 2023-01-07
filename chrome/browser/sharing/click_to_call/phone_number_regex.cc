@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"

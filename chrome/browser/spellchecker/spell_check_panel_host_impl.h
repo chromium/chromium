@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_PANEL_HOST_IMPL_H_
 #define CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_PANEL_HOST_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 

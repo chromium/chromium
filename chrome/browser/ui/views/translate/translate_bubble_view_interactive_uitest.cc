@@ -6,9 +6,9 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

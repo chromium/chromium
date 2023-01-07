@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/databinding/binding.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace vr {

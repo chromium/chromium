@@ -9,12 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"

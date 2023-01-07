@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"

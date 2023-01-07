@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VR_PLATFORM_INPUT_HANDLER_H_
 #define CHROME_BROWSER_VR_PLATFORM_INPUT_HANDLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/vr/text_edit_action.h"
 
 namespace vr {

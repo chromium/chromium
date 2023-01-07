@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"

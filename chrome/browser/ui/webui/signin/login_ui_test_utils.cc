@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

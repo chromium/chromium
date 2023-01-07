@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"

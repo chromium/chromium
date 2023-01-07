@@ -10,7 +10,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/video_tutorials/internal/android/tutorial_conversion_bridge.h"
 #include "chrome/browser/video_tutorials/internal/jni_headers/VideoTutorialServiceBridge_jni.h"
 #include "chrome/browser/video_tutorials/tutorial.h"

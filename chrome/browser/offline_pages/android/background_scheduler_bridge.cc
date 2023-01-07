@@ -6,7 +6,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/android/chrome_jni_headers/BackgroundSchedulerBridge_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"

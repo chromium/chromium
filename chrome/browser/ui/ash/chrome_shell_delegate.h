@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/shell_delegate.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "url/gurl.h"
 
 class ChromeShellDelegate : public ash::ShellDelegate {

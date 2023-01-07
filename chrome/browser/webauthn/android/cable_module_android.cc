@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"

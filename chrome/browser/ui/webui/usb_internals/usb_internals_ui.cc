@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/page_info/page_info_features.h"

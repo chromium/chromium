@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"

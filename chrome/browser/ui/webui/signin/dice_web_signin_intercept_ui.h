@@ -7,7 +7,7 @@
 
 #include "content/public/browser/web_ui_controller.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
 namespace content {

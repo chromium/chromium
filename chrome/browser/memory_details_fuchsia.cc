@@ -6,7 +6,7 @@
 
 #include <lib/zx/process.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "chrome/grit/chromium_strings.h"
 #include "content/public/browser/browser_task_traits.h"

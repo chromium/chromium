@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"

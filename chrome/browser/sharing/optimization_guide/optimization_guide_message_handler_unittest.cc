@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/proto/optimization_guide_push_notification.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"

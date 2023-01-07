@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/policy/android/cloud_management_android_connection.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"

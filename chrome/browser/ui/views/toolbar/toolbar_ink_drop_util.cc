@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"

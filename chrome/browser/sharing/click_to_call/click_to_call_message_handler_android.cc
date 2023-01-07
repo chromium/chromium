@@ -5,8 +5,8 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_message_handler_android.h"
 
 #include "base/android/jni_string.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"

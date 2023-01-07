@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/view_ids.h"

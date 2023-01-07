@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "components/sync/protocol/user_consent_types.pb.h"

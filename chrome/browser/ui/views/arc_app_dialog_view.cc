@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"

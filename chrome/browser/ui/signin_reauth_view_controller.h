@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

@@ -8,7 +8,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"

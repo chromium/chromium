@@ -19,8 +19,8 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

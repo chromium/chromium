@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"

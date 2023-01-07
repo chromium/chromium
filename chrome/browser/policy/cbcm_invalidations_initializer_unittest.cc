@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"

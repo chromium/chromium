@@ -13,7 +13,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"

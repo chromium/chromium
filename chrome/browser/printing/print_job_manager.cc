@@ -4,7 +4,7 @@
 
 #include "chrome/browser/printing/print_job_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job.h"

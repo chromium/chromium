@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

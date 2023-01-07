@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_periodic_scheduler.h"

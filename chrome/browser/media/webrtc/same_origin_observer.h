@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_SAME_ORIGIN_OBSERVER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_SAME_ORIGIN_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
 

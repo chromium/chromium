@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/pref_names.h"

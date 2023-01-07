@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
 #define CHROME_BROWSER_UI_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE_DIALOG_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

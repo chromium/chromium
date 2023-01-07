@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"

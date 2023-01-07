@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer_internal.h"

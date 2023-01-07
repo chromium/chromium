@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INTERNALS_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INTERNALS_UTILS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 

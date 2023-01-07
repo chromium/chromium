@@ -5,8 +5,8 @@
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/task/task_traits.h"

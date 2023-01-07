@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"

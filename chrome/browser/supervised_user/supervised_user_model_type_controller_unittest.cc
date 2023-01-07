@@ -4,7 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_sync_model_type_controller.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"

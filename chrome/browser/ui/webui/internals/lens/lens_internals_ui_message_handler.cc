@@ -10,7 +10,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/LensDebugBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"

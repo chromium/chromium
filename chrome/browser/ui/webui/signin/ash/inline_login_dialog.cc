@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/window_backdrop.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"

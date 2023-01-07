@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/native_certificates_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "content/public/browser/web_ui.h"

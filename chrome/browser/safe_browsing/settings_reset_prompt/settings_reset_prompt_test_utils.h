@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_config.h"
 #include "testing/gmock/include/gmock/gmock.h"

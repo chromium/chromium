@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -9,7 +9,7 @@
 #include <windows.storage.streams.h>
 #include <wrl/implements.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace webshare {

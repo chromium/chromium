@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"

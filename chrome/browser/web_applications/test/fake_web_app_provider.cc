@@ -8,9 +8,9 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/profiles/profile.h"

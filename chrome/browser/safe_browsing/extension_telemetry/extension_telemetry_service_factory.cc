@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_management.h"

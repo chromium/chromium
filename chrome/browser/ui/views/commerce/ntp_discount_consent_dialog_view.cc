@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/ntp_discount_consent_dialog_view.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"

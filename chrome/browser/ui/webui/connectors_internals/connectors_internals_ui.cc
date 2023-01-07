@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"

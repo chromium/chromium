@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/permissions/notification_blocked_dialog_controller_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"

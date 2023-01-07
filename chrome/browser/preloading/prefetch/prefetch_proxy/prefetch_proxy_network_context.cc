@@ -4,8 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service.h"

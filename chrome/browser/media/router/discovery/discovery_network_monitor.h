@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"

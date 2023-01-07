@@ -4,8 +4,8 @@
 
 #include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiling_host/chrome_client_connection_manager.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
 #include "chrome/common/chrome_switches.h"

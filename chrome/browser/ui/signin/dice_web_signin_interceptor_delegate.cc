@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

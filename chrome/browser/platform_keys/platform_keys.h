@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "net/cert/x509_certificate.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 
-#include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/browser_theme_pack.h"

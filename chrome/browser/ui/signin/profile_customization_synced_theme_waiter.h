@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_PROFILE_CUSTOMIZATION_SYNCED_THEME_WAITER_H_
 #define CHROME_BROWSER_UI_SIGNIN_PROFILE_CUSTOMIZATION_SYNCED_THEME_WAITER_H_
 
-#include "base/callback_forward.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_service.h"

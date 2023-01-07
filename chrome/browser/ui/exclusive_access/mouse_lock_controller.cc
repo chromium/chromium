@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"

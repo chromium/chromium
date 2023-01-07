@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/proto/client_state.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"

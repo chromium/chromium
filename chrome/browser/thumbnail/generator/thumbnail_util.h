@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_GENERATOR_THUMBNAIL_UTIL_H_
 #define CHROME_BROWSER_THUMBNAIL_GENERATOR_THUMBNAIL_UTIL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class SkBitmap;
 

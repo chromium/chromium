@@ -4,9 +4,9 @@
 
 #include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"

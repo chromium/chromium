@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 // An abstract base for an object that monitors the browser's installation for
 // updates.

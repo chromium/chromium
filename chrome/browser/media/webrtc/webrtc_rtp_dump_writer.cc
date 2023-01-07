@@ -7,8 +7,8 @@
 #include <string.h>
 
 #include "base/big_endian.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"

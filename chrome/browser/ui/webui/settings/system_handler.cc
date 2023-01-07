@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "build/chromeos_buildflags.h"

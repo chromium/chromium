@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"

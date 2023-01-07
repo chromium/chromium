@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "printing/printing_context_android.h"
 #endif
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/importer/import_lock_dialog_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"

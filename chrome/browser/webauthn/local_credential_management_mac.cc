@@ -5,7 +5,7 @@
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/fido/mac/credential_store.h"
 
 LocalCredentialManagementMac::LocalCredentialManagementMac(

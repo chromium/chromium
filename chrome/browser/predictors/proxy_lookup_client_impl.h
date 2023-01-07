@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_PROXY_LOOKUP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_PREDICTORS_PROXY_LOOKUP_CLIENT_IMPL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"

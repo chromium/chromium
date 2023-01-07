@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"

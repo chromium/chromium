@@ -4,7 +4,7 @@
 
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/image/image.h"

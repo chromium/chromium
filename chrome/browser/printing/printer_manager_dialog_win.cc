@@ -7,8 +7,8 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"

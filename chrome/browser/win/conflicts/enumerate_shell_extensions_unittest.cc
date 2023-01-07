@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"

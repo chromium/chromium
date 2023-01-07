@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CHROME_WEBAUTHN_CLIENT_ANDROID_H_
 #define CHROME_BROWSER_WEBAUTHN_ANDROID_CHROME_WEBAUTHN_CLIENT_ANDROID_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 
 // Chrome implementation of WebAuthnClientAndroid.

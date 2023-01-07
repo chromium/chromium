@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "apps/saved_files_service.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"

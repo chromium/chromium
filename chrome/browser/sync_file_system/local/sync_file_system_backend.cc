@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

@@ -9,9 +9,9 @@
 
 #include <limits>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"

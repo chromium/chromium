@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/touch_mode_stats_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"

@@ -7,9 +7,9 @@
 
 #include <map>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"

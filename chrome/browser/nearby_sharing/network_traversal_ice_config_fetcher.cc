@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/network_traversal_ice_config_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "chrome/services/sharing/public/cpp/sharing_webrtc_metrics.h"

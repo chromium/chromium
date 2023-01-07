@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

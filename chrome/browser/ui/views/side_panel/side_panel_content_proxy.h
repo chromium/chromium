@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/views/view.h"
 
 // SidePanelContentProxy is used by the SidePanelCoordinator to check that the

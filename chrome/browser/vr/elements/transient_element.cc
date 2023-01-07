@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/transient_element.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace vr {
 

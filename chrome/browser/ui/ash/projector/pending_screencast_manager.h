@@ -10,7 +10,7 @@
 
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

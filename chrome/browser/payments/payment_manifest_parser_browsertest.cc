@@ -7,8 +7,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"

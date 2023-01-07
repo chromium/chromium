@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_LACROS_SIGN_IN_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_LACROS_SIGN_IN_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"

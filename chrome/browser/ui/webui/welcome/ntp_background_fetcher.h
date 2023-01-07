@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace network {

@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/process.mojom.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"

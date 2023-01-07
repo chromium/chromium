@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "ui/views/widget/widget.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/widget/widget.h"
 
 DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
     BrowserFrame* browser_frame,

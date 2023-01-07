@@ -17,12 +17,12 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"  // kNullProcessHandle.

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"

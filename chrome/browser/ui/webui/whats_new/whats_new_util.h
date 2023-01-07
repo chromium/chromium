@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "url/gurl.h"
 
 class Browser;

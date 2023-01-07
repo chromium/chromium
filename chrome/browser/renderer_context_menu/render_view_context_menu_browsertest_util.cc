@@ -4,8 +4,8 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
