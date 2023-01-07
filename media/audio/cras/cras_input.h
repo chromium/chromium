@@ -130,6 +130,8 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
 
   // True if the stream is a system-wide loopback stream.
   bool is_loopback_;
+  // True if the loopback stream does not contain chrome audio.
+  bool is_loopback_without_chrome_;
 
   // True if we want to mute system audio during capturing.
   bool mute_system_audio_;

@@ -18,6 +18,8 @@ const char AudioDeviceDescription::kCommunicationsDeviceId[] = "communications";
 const char AudioDeviceDescription::kLoopbackInputDeviceId[] = "loopback";
 const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
     "loopbackWithMute";
+const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
+    "loopbackWithoutChrome";
 
 namespace {
 constexpr char kAirpodsNameSubstring[] = "AirPods";

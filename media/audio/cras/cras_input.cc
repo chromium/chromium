@@ -72,6 +72,8 @@ CrasInputStream::CrasInputStream(const AudioParameters& params,
       stream_direction_(CRAS_STREAM_INPUT),
       pin_device_(NO_DEVICE),
       is_loopback_(AudioDeviceDescription::IsLoopbackDevice(device_id)),
+      is_loopback_without_chrome_(
+          device_id == AudioDeviceDescription::kLoopbackWithoutChromeId),
       mute_system_audio_(device_id ==
                          AudioDeviceDescription::kLoopbackWithMuteDeviceId),
       mute_done_(false),
@@ -155,7 +157,17 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
       return OpenOutcome::kFailed;
     }
 
-    int rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
+    int rc;
+    if (is_loopback_without_chrome_) {
+      uint32_t client_types = 0;
+      client_types |= 1 << CRAS_CLIENT_TYPE_CHROME;
+      client_types |= 1 << CRAS_CLIENT_TYPE_LACROS;
+      client_types = ~client_types;
+      rc = pin_device_ = libcras_client_get_floop_dev_idx_by_client_types(
+          client_, client_types);
+    } else {
+      rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
+    }
     if (rc < 0) {
       DLOG(WARNING) << "Couldn't find CRAS loopback device.";
       ReportStreamOpenResult(

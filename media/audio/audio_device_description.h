@@ -37,6 +37,10 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // will mute system audio during capturing.
   static const char kLoopbackWithMuteDeviceId[];
 
+  // Similar to |kLoopbackInputDeviceId|, but without audio from Chrome.
+  // Only supported on ChromeOS.
+  static const char kLoopbackWithoutChromeId[];
+
   // Returns true if |device_id| represents the default device.
   static bool IsDefaultDevice(const std::string& device_id);
 
